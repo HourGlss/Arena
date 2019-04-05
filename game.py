@@ -2,6 +2,8 @@ import pygame
 from network import Network
 import time
 import math
+
+#GITKRACKEN
 COLORS = {
     'BLACK':(0, 0, 0),
     'WHITE':(255, 255, 255),
