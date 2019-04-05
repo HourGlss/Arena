@@ -20,11 +20,11 @@ class Player():
     def __init__(self, startx, starty, color=(255, 0, 0)):
         self.x = startx
         self.y = starty
-        self.velocity = 5
+        self.velocity = 7
         self.color = color
 
     def draw(self, g):
-        self.draw_regular_polygon(g, self.color, 5,0,self.x, self.y, self.radius)
+        self.draw_regular_polygon(g, self.color, 5,math.pi / 5,self.x, self.y, self.radius)
 
     def draw_regular_polygon(self,surface, color, numSides, tiltAngle, x, y, radius):
         pts = []
@@ -98,11 +98,21 @@ class Game:
 
             if keys[pygame.K_q]:
                 self.player.x, self.player.y = pygame.mouse.get_pos()
-            if keys[pygame.K_n]:
-                self.player.velocity -= 10
-
             if keys[pygame.K_m]:
-                self.player.velocity += 10
+                if self.allow_color_change:
+                    self.last_color_change = time.time()
+                    self.fg+=1
+                    if self.fg >= len(available_colors):
+                        self.fg = 0
+                    self.allow_color_change = False
+
+            if keys[pygame.K_n]:
+                if self.allow_color_change:
+                    self.last_color_change = time.time()
+                    self.bg+=1
+                    if self.bg >= len(available_colors):
+                        self.bg = 0
+                    self.allow_color_change = False
             self.color_change_allowed()
 
             # Send Network Stuff
@@ -114,8 +124,6 @@ class Game:
             self.player2.draw(self.canvas.get_canvas())
             self.canvas.draw_text("This is a text",12,1000,700,self.fg)
             self.canvas.update()
-
-            #comment here
 
         pygame.quit()
 
