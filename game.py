@@ -28,7 +28,7 @@ class Player():
         self.color = color
 
     def draw(self, g):
-        self.draw_regular_polygon(g, self.color, 5, math.pi / 5, self.x, self.y, self.radius)
+       self.draw_regular_polygon(g, self.color, 5, math.pi / 5, self.x, self.y, self.radius)
 
     def draw_regular_polygon(self, surface, color, numSides, tiltAngle, x, y, radius):
         pts = []
@@ -53,6 +53,11 @@ class Player():
         else:
             self.y += self.velocity
 
+    def rotate(self, angle):
+        rot_image = pygame.transform.rotozoom(self.surface, angle, 1)
+        rot_rect = self.rect.copy()
+        rot_rect.center = rot_image.get_rect().center
+        self.rotated_surface = rot_image
 
 class Game:
 
@@ -76,6 +81,12 @@ class Game:
 
                 if event.type == pygame.K_ESCAPE:
                     run = False
+                elif event.type == pygame.MOUSEMOTION:
+                    mouse_x = pygame.mouse.get_pos()[0]
+                    mouse_y = pygame.mouse.get_pos()[1]
+                    angle = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
+                    angle = angle * (180 / math.pi)
+                    Player.rotate(angle)
 
             keys = pygame.key.get_pressed()
 
@@ -153,5 +164,5 @@ class Canvas:
 
 
 if __name__ == "__main__":
-    g = Game(1024, 768)
+    g = Game(500, 500)
     g.run()
