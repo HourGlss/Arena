@@ -27,10 +27,13 @@ class Player():
         self.velocity = 7
         self.color = color
 
-    def draw(self, g):
-       self.draw_regular_polygon(g, self.color, 5, math.pi / 5, self.x, self.y, self.radius)
+    def draw(self, g,tiltangle):
+       # self.draw_regular_polygon(g, self.color, 5, math.pi / 5, self.x, self.y, self.radius)
+       self.draw_regular_polygon(g, self.color, 5, tiltangle, self.x, self.y, self.radius)
+
 
     def draw_regular_polygon(self, surface, color, numSides, tiltAngle, x, y, radius):
+
         pts = []
         for i in range(numSides):
             x = x + radius * math.cos(tiltAngle + math.pi * 2 * i / numSides)
@@ -50,15 +53,18 @@ class Player():
             self.x -= self.velocity
         elif dirn == 2:
             self.y -= self.velocity
-        else:
+        elif dirn == 3:
             self.y += self.velocity
+        else:
+            print("Direction is off.")
 
-    def rotate(self, angle):
-        thingtorotate = pygame.transform.rotozoom(self.surface, angle, 1)
+    # def rotate(self, angle):
+    #     thingtorotate = pygame.transform.rotozoom(self.surface, angle, 1)
 
 
 class Game:
 
+    tiltAngle = 0
     def __init__(self, w, h):
         self.net = Network()
         self.width = w
@@ -79,12 +85,7 @@ class Game:
 
                 if event.type == pygame.K_ESCAPE:
                     run = False
-                elif event.type == pygame.MOUSEMOTION:
-                    mouse_x = pygame.mouse.get_pos()[0]
-                    mouse_y = pygame.mouse.get_pos()[1]
-                    angle = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
-                    angle = angle * (180 / math.pi)
-                    self.player.rotate(angle)
+
 
             keys = pygame.key.get_pressed()
 
@@ -108,8 +109,12 @@ class Game:
 
             # Update Canvas
             self.canvas.draw_background()
-            self.player.draw(self.canvas.get_canvas())
-            self.player2.draw(self.canvas.get_canvas())
+
+            mouse_x,mouse_y= pygame.mouse.get_pos()
+            self.tiltAngle  = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
+                # self.tiltAngle = angle * (180 / math.pi)
+            self.player.draw(self.canvas.get_canvas(),self.tiltAngle)
+            self.player2.draw(self.canvas.get_canvas(),0)
             self.canvas.update()
 
         pygame.quit()
