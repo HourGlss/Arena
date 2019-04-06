@@ -54,10 +54,8 @@ class Player():
             self.y += self.velocity
 
     def rotate(self, angle):
-        rot_image = pygame.transform.rotozoom(self.surface, angle, 1)
-        rot_rect = self.rect.copy()
-        rot_rect.center = rot_image.get_rect().center
-        self.rotated_surface = rot_image
+        thingtorotate = pygame.transform.rotozoom(self.surface, angle, 1)
+
 
 class Game:
 
@@ -86,7 +84,7 @@ class Game:
                     mouse_y = pygame.mouse.get_pos()[1]
                     angle = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
                     angle = angle * (180 / math.pi)
-                    Player.rotate(angle)
+                    self.player.rotate(angle)
 
             keys = pygame.key.get_pressed()
 
