@@ -1,7 +1,7 @@
 import socket
 import pickle
 import random
-
+import time
 class NetworkUDP:
 
     def __init__(self):
@@ -36,7 +36,9 @@ class NetworkUDP:
 # data,addr = sock.recvfrom(2048)
 # print(data.decode())
 N = NetworkUDP()
-
-for e in range(0,10):
-    data_to_send = {'uid': "1234", "x": random.randint(0,1024), 'y': random.randint(0,768)}
-    print(N.send(data_to_send))
+last_sent = None
+while True:
+    now = time.time()
+    if last_sent == None or now-last_sent >=.1:
+        data_to_send = {'uid': "1234", "x": random.randint(0,1024), 'y': random.randint(0,768)}
+        print(N.send(data_to_send))
