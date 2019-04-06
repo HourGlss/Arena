@@ -1,6 +1,6 @@
 import socket
 import pickle
-
+import random
 
 class NetworkUDP:
 
@@ -36,5 +36,7 @@ class NetworkUDP:
 # data,addr = sock.recvfrom(2048)
 # print(data.decode())
 N = NetworkUDP()
-data_to_send = {'uid': "1234", "x": 0, 'y': 1000}
-print(N.send(data_to_send))
+
+for e in range(0,10):
+    data_to_send = {'uid': "1234", "x": random.randint(0,1024), 'y': random.randint(0,768)}
+    print(N.send(data_to_send))
