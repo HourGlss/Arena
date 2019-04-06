@@ -2,8 +2,9 @@ import pygame
 from networkTCP import Network
 import time
 import math
+window = (1920,1080)
 
-# GITKRACKEN
+# https://www.rapidtables.com/web/color/RGB_Color.html
 COLORS = {
     'BLACK': (0, 0, 0),
     'WHITE': (255, 255, 255),
@@ -18,7 +19,7 @@ COLORS = {
 available_colors = list(COLORS.keys())
 
 
-class Player():
+class Player:
     radius = 25
     uid = None
     def __init__(self,startx, starty, color=(255, 0, 0)):
@@ -27,9 +28,10 @@ class Player():
         self.velocity = 7
         self.color = color
 
-    def draw(self, g,tiltangle):
+    def draw(self, g):
        # self.draw_regular_polygon(g, self.color, 5, math.pi / 5, self.x, self.y, self.radius)
-       self.draw_regular_polygon(g, self.color, 5, tiltangle, self.x, self.y, self.radius)
+       # self.draw_regular_polygon(g, self.color, 5, tiltangle, self.x, self.y, self.radius)
+        pygame.draw.circle(g,COLORS['BLUE'],(self.x,self.y),self.radius)
 
 
     def draw_regular_polygon(self, surface, color, numSides, tiltAngle, x, y, radius):
@@ -44,7 +46,6 @@ class Player():
     def move(self, dirn):
         """
         :param dirn: 0 - 3 (right, left, up, down)
-        :return: None
         """
 
         if dirn == 0:
@@ -113,8 +114,8 @@ class Game:
             mouse_x,mouse_y= pygame.mouse.get_pos()
             self.tiltAngle  = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
                 # self.tiltAngle = angle * (180 / math.pi)
-            self.player.draw(self.canvas.get_canvas(),self.tiltAngle)
-            self.player2.draw(self.canvas.get_canvas(),0)
+            self.player.draw(self.canvas.get_canvas())
+            self.player2.draw(self.canvas.get_canvas())
             self.canvas.update()
 
         pygame.quit()
@@ -167,5 +168,5 @@ class Canvas:
 
 
 if __name__ == "__main__":
-    g = Game(500, 500)
+    g = Game(window[0],window[1])
     g.run()
