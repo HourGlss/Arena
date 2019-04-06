@@ -2,11 +2,12 @@ import socket
 import pickle
 import random
 import time
+import config
 class NetworkUDP:
 
     def __init__(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.host = "127.0.0.1"  # For this to work on your machine this must be equal to the ipv4 address of the machine running the server
+        self.host = config.host_ip  # For this to work on your machine this must be equal to the ipv4 address of the machine running the server
         # You can find this address by typing ipconfig in CMD and copying the ipv4 address. Again this must be the servers
         # ipv4 address. This feild will be the same for all your clients.
         self.port = 5555
