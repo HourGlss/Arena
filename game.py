@@ -1,4 +1,5 @@
 import pygame
+from PIL import Image, ImageDraw, ImageFont
 from networkTCP import Network
 import time
 import math
@@ -27,19 +28,9 @@ class Player():
         self.velocity = 7
         self.color = color
 
-    def draw(self, g,tiltangle):
-       # self.draw_regular_polygon(g, self.color, 5, math.pi / 5, self.x, self.y, self.radius)
-       self.draw_regular_polygon(g, self.color, 5, tiltangle, self.x, self.y, self.radius)
-
-
-    def draw_regular_polygon(self, surface, color, numSides, tiltAngle, x, y, radius):
-
-        pts = []
-        for i in range(numSides):
-            x = x + radius * math.cos(tiltAngle + math.pi * 2 * i / numSides)
-            y = y + radius * math.sin(tiltAngle + math.pi * 2 * i / numSides)
-            pts.append([int(x), int(y)])
-        pygame.draw.polygon(surface, color, pts)
+    def draw(self, g):
+        pos = [self.x, self.y]
+        pygame.draw.circle(g, self.color, pos, self.radius)
 
     def move(self, dirn):
         """
@@ -57,9 +48,6 @@ class Player():
             self.y += self.velocity
         else:
             print("Direction is off.")
-
-    # def rotate(self, angle):
-    #     thingtorotate = pygame.transform.rotozoom(self.surface, angle, 1)
 
 
 class Game:
@@ -112,9 +100,15 @@ class Game:
 
             mouse_x,mouse_y= pygame.mouse.get_pos()
             self.tiltAngle  = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
+            target_x = self.player.x + (self.player.radius * math.cos(self.tiltAngle))
+            target_y = self.player.y + (self.player.radius * math.sin(self.tiltAngle))
+            circleTangent = (target_x, target_y)
+            circleTangent = self.player.radius
+            pygame.draw.circle(self, COLORS['BLACK'], circleTangent, 5)
                 # self.tiltAngle = angle * (180 / math.pi)
-            self.player.draw(self.canvas.get_canvas(),self.tiltAngle)
-            self.player2.draw(self.canvas.get_canvas(),0)
+            #self.player.draw(self.canvas.get_canvas(),self.tiltAngle)
+            self.player.draw(self.canvas.get_canvas())
+            self.player2.draw(self.canvas.get_canvas())
             self.canvas.update()
 
         pygame.quit()
