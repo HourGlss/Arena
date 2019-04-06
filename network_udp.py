@@ -12,6 +12,9 @@ class NetworkUDP:
         self.port = 5555
         self.addr = (self.host, self.port)
 
+    def set_uid(self,uid):
+        self.uid = uid
+
     def send(self, data):
         """
         :param data: str
@@ -39,6 +42,8 @@ N = NetworkUDP()
 last_sent = None
 while True:
     now = time.time()
-    if last_sent == None or now-last_sent >=.1:
-        data_to_send = {'uid': "1234", "x": random.randint(0,1024), 'y': random.randint(0,768)}
-        print(N.send(data_to_send))
+    if last_sent == None or now-last_sent >=.06:
+        data_to_send = {"x": random.randint(0,1024), 'y': random.randint(0,768)}
+        rec_data = N.send(data_to_send)
+        print("My UID is {}".format(rec_data[0]['uid']))
+        last_sent = now
