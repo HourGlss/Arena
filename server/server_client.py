@@ -1,4 +1,5 @@
 class Client:
+    last_seen = None
     def __init__(self, addr, uid):
         self.uid = uid
         self.addr = addr

@@ -1,5 +1,5 @@
 import pygame
-from network import Network
+from networkTCP import Network
 import time
 import math
 
@@ -20,8 +20,8 @@ available_colors = list(COLORS.keys())
 
 class Player():
     radius = 25
-
-    def __init__(self, startx, starty, color=(255, 0, 0)):
+    uid = None
+    def __init__(self,startx, starty, color=(255, 0, 0)):
         self.x = startx
         self.y = starty
         self.velocity = 7
@@ -110,7 +110,7 @@ class Game:
         Send position to server
         :return: None
         """
-        data = str(self.net.id) + ":" + str(self.player.x) + "," + str(self.player.y)
+        data = str(self.player.x) + "," + str(self.player.y)
         reply = self.net.send(data)
         return reply
 

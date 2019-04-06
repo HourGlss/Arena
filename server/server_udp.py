@@ -3,7 +3,7 @@ from server.server_client import Client
 import sys
 import random
 import pickle
-
+import time
 
 def generate_options():
     numbers = [str(i) for i in range(10)]
@@ -41,6 +41,7 @@ clients = []
 currentId = "0"
 
 while True:
+    now = time.time()
     data_rec, addr_rec = s.recvfrom(1024)  # buffer size is 1024 bytes
     print(addr_rec)
     data = pickle.loads(data_rec)
@@ -56,9 +57,13 @@ while True:
         client_to_add.set_pos((data['x'], data['y']))
         clients.append(client_to_add)
         client_received_from = client_to_add
-
+    client_received_from.last_seen = time.time()
     data_to_send = []
     for client in clients:
+        if now - client.last_seen >= 1:
+            print("removing",client.uid)
+            clients.remove(client)
+
         if client.addr != addr_rec:
             data_to_send.append(client.get_status())
     data_to_send.insert(0,client_received_from.get_status())
