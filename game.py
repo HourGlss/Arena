@@ -100,11 +100,13 @@ class Game:
 
             mouse_x,mouse_y= pygame.mouse.get_pos()
             self.tiltAngle  = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
-            target_x = self.player.x + (self.player.radius * math.cos(self.tiltAngle))
-            target_y = self.player.y + (self.player.radius * math.sin(self.tiltAngle))
+            print(math.degrees(self.tiltAngle))
+            target_x = self.player.x + (self.player.radius * math.sin(math.degrees(self.tiltAngle)))
+            target_y = self.player.y + (self.player.radius * math.cos(math.degrees(self.tiltAngle)))
+            print(target_y)
+            print(target_x)
             circleTangent = (target_x, target_y)
-            circleTangent = self.player.radius
-            pygame.draw.circle(self, COLORS['BLACK'], circleTangent, 5)
+            pygame.draw.circle(self.canvas.get_canvas(), COLORS['BLACK'], [int(target_x), int(target_y)], 5)
                 # self.tiltAngle = angle * (180 / math.pi)
             #self.player.draw(self.canvas.get_canvas(),self.tiltAngle)
             self.player.draw(self.canvas.get_canvas())
