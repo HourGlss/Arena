@@ -2,57 +2,46 @@ import pygame
 class Player:
     radius = 25
     uid = None
-    ticks_until_acceleration_default = 5
-    ticks_until_acceleration = 5
 
     def __init__(self,startx, starty, color=(255, 0, 0)):
         self.x = startx
         self.y = starty
         self.color = color
-        self.accelerate_north = 0
-        self.accelerate_south = 0
-        self.accelerate_east = 0
-        self.accelerate_west = 0
-        self.velocity_north = 0
-        self.velocity_south = 0
-        self.velocity_east = 0
-        self.velocity_west = 0
+        self.velocity = 7
 
     def draw(self, g):
+        #your player
         pos = [self.x, self.y]
         pygame.draw.circle(g, self.color, pos, self.radius)
+
+        #heathbar
+        health_length = 20
+        height = 3
+        up = 35
+        healthbar_vert = [self.x + length, (self.y - up) + height], [self.x - length, (self.y - up) + height], [
+            self.x - length, (self.y - up) - height], [self.x + length, (self.y - up) - height]
+        pygame.draw.polygon(g, pygame.Color(255, 0, 0), healthbar_vert)
+
+        #manabar
+        length = 20
+        height = 3
+        up = 35
+        healthbar_vert = [self.x + length, (self.y - up) + height], [self.x - length, (self.y - up) + height], [
+            self.x - length, (self.y - up) - height], [self.x + length, (self.y - up) - height]
+        pygame.draw.polygon(g, pygame.Color(255, 0, 0), healthbar_vert)
 
     def move(self, dirn):
         """
         :param dirn: 0 - 3 (right, left, up, down)
         """
         #this controls your movement
-        n = False
-        e = False
-        s = False
-        w = False
         if dirn == 0:
-            self.velocity_east += self.accelerate_east
-            e= True
-            self.x += self.velocity_east
+            self.x += self.velocity
         elif dirn == 1:
-            self.velocity_west += self.accelerate_west
-            w = True
-            self.x -= self.velocity_west
+            self.x -= self.velocity
         elif dirn == 2:
-            self.velocity_north += self.accelerate_north
-            n = True
-            self.y -= self.velocity_north
+            self.y -= self.velocity
         elif dirn == 3:
-            self.velocity_south += self.accelerate_south
-            s = True
-            self.y += self.velocity_south
+            self.y += self.velocity
         else:
-            if not n:
-                self.velocity_north -= 10
-            if not s:
-                self.velocity_south -= 10
-            if not e:
-                self.velocity_east -= 10
-            if not w:
-                self.velocity_west -= 10
+            print("Direction is off.")

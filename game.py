@@ -3,7 +3,7 @@ from networkTCP import Network
 from Player import Player
 import time
 import math
-window = (1920,1080)
+window = (1080,720)
 # https://www.rapidtables.com/web/color/RGB_Color.html
 COLORS = {
     'BLACK': (0, 0, 0),
@@ -33,7 +33,6 @@ class Game:
     def run(self):
         clock = pygame.time.Clock()
         run = True
-
         player_can_accelerate = False
         while run:
             clock.tick(60)
@@ -50,59 +49,26 @@ class Game:
             keys = pygame.key.get_pressed()
 
 
-
-            #fucking accel
-            if self.player.ticks_until_acceleration >0:
-                self.player.ticks_until_acceleration -=1
-            elif self.player.ticks_until_acceleration == 0:
-                player_can_accelerate = True
-                self.player.ticks_until_acceleration = self.player.ticks_until_acceleration_default
-
-
             #this keeps you on screen
 
-            if keys[pygame.K_RIGHT]:
-                if self.player.x <= self.width - self.player.velocity_east:
-                    if player_can_accelerate:
-                        self.player.accelerate_east += 1
+            if keys[pygame.K_d]:
+                if self.player.x <= self.width - self.player.velocity:
                     self.player.move(0)
 
-            if keys[pygame.K_LEFT]:
-                if self.player.x >= self.player.velocity_west:
-                    if player_can_accelerate:
-                        self.player.accelerate_west += 1
+
+            if keys[pygame.K_a]:
+                if self.player.x >= self.player.velocity:
                     self.player.move(1)
 
-            if keys[pygame.K_UP]:
-                if self.player.y >= self.player.velocity_north:
-                    if player_can_accelerate:
-                        self.player.accelerate_north += 1
+
+            if keys[pygame.K_w]:
+                if self.player.y >= self.player.velocity:
                     self.player.move(2)
 
-            if keys[pygame.K_DOWN]:
-                if self.player.y <= self.height - self.player.velocity_south:
-                    if player_can_accelerate:
-                        self.player.accelerate_south += 1
+
+            if keys[pygame.K_s]:
+                if self.player.y <= self.height - self.player.velocity:
                     self.player.move(3)
-
-            if self.player.accelerate_east > 0:
-                self.player.accelerate_east -= 1
-            if self.player.accelerate_east < 0:
-                self.player.accelerate_east == 0
-            if self.player.accelerate_west > 0:
-                self.player.accelerate_west -= 1
-            if self.player.accelerate_west < 0:
-                self.player.accelerate_west == 0
-            if self.player.accelerate_south > 0:
-                self.player.accelerate_south -= 1
-            if self.player.accelerate_south < 0:
-                self.player.accelerate_south == 0
-            if self.player.accelerate_north > 0:
-                self.player.accelerate_north -= 1
-            if self.player.accelerate_north < 0:
-                self.player.accelerate_north == 0
-
-
 
 
             # Send Network Stuff
