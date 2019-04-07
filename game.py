@@ -5,12 +5,12 @@ import Utility
 import time
 import math
 
-window = (1080,720)
+window = (1080, 720)
 
 
 class Game:
-
     tiltAngle = 0
+
     def __init__(self, w, h):
         self.net = Network()
         self.width = w
@@ -23,11 +23,8 @@ class Game:
     def run(self):
         clock = pygame.time.Clock()
         run = True
-        player_can_accelerate = False
         while run:
             clock.tick(60)
-
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
@@ -35,30 +32,99 @@ class Game:
                 if event.type == pygame.K_ESCAPE:
                     run = False
 
-
             keys = pygame.key.get_pressed()
 
+            # this controls movement
 
-            #this keeps you on screen
+            if self.player.accelerate_tick_wait == 0:
+                self.player.can_accelerate = True
+                self.player.accelerate_tick_wait = self.player.accelerate_tick_wait_default
+            self.player.accelerate_tick_wait -= 1
+
+
 
             if keys[pygame.K_d]:
-                if self.player.x <= self.width - self.player.velocity:
-                    self.player.move(0)
-
+                self.player.request_movement(0)
 
             if keys[pygame.K_a]:
-                if self.player.x >= self.player.velocity:
-                    self.player.move(1)
 
+                self.player.request_movement(1)
 
             if keys[pygame.K_w]:
-                if self.player.y >= self.player.velocity:
-                    self.player.move(2)
-
+                self.player.request_movement(2)
 
             if keys[pygame.K_s]:
-                if self.player.y <= self.height - self.player.velocity:
-                    self.player.move(3)
+                self.player.request_movement(3)
+
+
+
+            # FRICTION
+            if self.player.horizontal_velocity > 0:
+                self.player.horizontal_velocity -= 5
+            if self.player.horizontal_velocity < 0:
+                self.player.horizontal_velocity += 5
+
+            if self.player.vertical_velocity > 0:
+                self.player.vertical_velocity -= 5
+            if self.player.vertical_velocity < 0:
+                self.player.vertical_velocity += 5
+
+            self.player.horizontal_velocity += self.player.horizontal_acceleration
+            if self.player.horizontal_velocity > self.player.velocity_maximum:
+                self.player.horizontal_velocity = self.player.velocity_maximum
+            elif self.player.horizontal_velocity < self.player.velocity_minimum:
+                self.player.horizontal_velocity = self.player.velocity_minimum
+            requested_x = self.player.x + self.player.horizontal_velocity
+
+            self.player.vertical_velocity += self.player.vertical_acceleration
+            if self.player.vertical_velocity > self.player.velocity_maximum:
+                self.player.vertical_velocity = self.player.velocity_maximum
+            elif self.player.vertical_velocity < self.player.velocity_minimum:
+                self.player.vertical_velocity = self.player.velocity_minimum
+            requested_y = self.player.y + self.player.vertical_velocity
+
+            # DETECT COLLISION AND ALLOW OR NOT. If collision happens, move the player to the "wall" and then stop acceleration and velocity
+
+            # MAY NEED TO check with radius
+            if requested_x <= self.width - self.player.radius:
+                # ALLOW
+                self.player.x = requested_x
+            else:
+                self.player.x = self.width - self.player.radius
+                self.player.horizontal_velocity = 0
+                self.player.horizontal_acceleration = 0
+
+            if requested_x >= self.player.radius:
+                # ALLOW
+                self.player.x = requested_x
+            else:
+                # collide with wall
+                self.player.x = self.player.radius
+                self.player.horizontal_velocity = 0
+                self.player.horizontal_acceleration = 0
+
+            if requested_y >= self.player.radius:
+                # ALLOW
+                self.player.y = requested_y
+            else:
+                # collide with wall
+                self.player.y = self.player.radius
+                self.player.vertical_velocity = 0
+                self.player.vertical_acceleration = 0
+
+            if requested_y <= self.height:
+                # ALLOW
+                self.player.y = requested_y
+            else:
+                # collide with wall
+                self.player.y = self.height - self.player.radius
+                self.player.vertical_velocity = 0
+                self.player.vertical_acceleration = 0
+
+
+
+
+
 
 
             # Send Network Stuff
@@ -68,15 +134,15 @@ class Game:
             self.canvas.draw_background()
             self.player.draw(self.canvas.get_canvas())
 
-            #point cursor towards mouse
-            mouse_x,mouse_y= pygame.mouse.get_pos()
-            self.tiltAngle  = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
+            # point cursor towards mouse
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            self.tiltAngle = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
             target_x = self.player.x + (self.player.radius * math.cos(self.tiltAngle))
             target_y = self.player.y + (self.player.radius * math.sin(self.tiltAngle))
-            pygame.draw.circle(self.canvas.get_canvas(), Utility.dCOLORS['BLACK'], [int(target_x), int(target_y)], 5)
+            pygame.draw.circle(self.canvas.get_canvas(), Utility.COLORS['BLACK'], [int(target_x), int(target_y)], 5)
 
             self.player2.draw(self.canvas.get_canvas())
-            player_can_accelerate = False
+            self.player.can_accelerate = False
             self.canvas.update()
 
         pygame.quit()
@@ -116,7 +182,7 @@ class Canvas:
         pygame.font.init()
 
         font = pygame.font.Font('freesansbold.ttf', 32)
-        text = font.render(text, True, COLORS[color])
+        text = font.render(text, True, Utility.COLORS[color])
         textRect = text.get_rect()
         textRect.center = (x // 2, x // 2)
         self.screen.blit(text, textRect)
@@ -129,5 +195,5 @@ class Canvas:
 
 
 if __name__ == "__main__":
-    g = Game(window[0],window[1])
+    g = Game(window[0], window[1])
     g.run()
