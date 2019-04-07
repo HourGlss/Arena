@@ -60,6 +60,7 @@ class Game:
         self.player = Player(50, 50)
         self.player2 = Player(100, 100)
         self.canvas = Canvas(self.width, self.height, "Testing...")
+        pygame.mouse.set_visible(False)
 
     def run(self):
         clock = pygame.time.Clock()
@@ -97,6 +98,7 @@ class Game:
 
             # Update Canvas
             self.canvas.draw_background()
+            self.player.draw(self.canvas.get_canvas())
 
             #point cursor towards mouse
             mouse_x,mouse_y= pygame.mouse.get_pos()
@@ -105,7 +107,6 @@ class Game:
             target_y = self.player.y + (self.player.radius * math.sin(self.tiltAngle))
             pygame.draw.circle(self.canvas.get_canvas(), COLORS['BLACK'], [int(target_x), int(target_y)], 5)
 
-            self.player.draw(self.canvas.get_canvas())
             self.player2.draw(self.canvas.get_canvas())
             self.canvas.update()
 
