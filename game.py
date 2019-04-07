@@ -5,7 +5,7 @@ import Utility
 import time
 import math
 
-window = (1080, 720)
+window = (1920 , 1080)
 
 
 class Game:
@@ -15,7 +15,7 @@ class Game:
         self.net = Network()
         self.width = w
         self.height = h
-        self.player = Player(50, 50)
+        self.player = Player(int(window[0]/2), int(window[1]/2))
         self.player2 = Player(100, 100)
         self.canvas = Canvas(self.width, self.height, "Testing...")
         # pygame.mouse.set_visible(False)
@@ -56,18 +56,38 @@ class Game:
             if keys[pygame.K_s]:
                 self.player.request_movement(3)
 
+            if keys[pygame.K_x]:
+                self.player.request_movement(4)
 
 
-            # FRICTION
+
+            # FRICTION for velocity
             if self.player.horizontal_velocity > 0:
-                self.player.horizontal_velocity -= 5
-            if self.player.horizontal_velocity < 0:
-                self.player.horizontal_velocity += 5
+                self.player.horizontal_velocity = self.player.horizontal_velocity - self.player.horizontal_velocity / 3
+            elif self.player.horizontal_velocity < 0:
+                self.player.horizontal_velocity = self.player.horizontal_velocity + abs(self.player.horizontal_velocity )/ 3
 
             if self.player.vertical_velocity > 0:
-                self.player.vertical_velocity -= 5
-            if self.player.vertical_velocity < 0:
-                self.player.vertical_velocity += 5
+                self.player.vertical_velocity = self.player.vertical_velocity - self.player.vertical_velocity / 3
+            elif self.player.vertical_velocity < 0:
+                self.player.vertical_velocity = self.player.vertical_velocity + abs(self.player.vertical_velocity) / 3
+
+            #Friction for acceleration
+            # if self.player.horizontal_acceleration > 0:
+            #     self.player.horizontal_acceleration = self.player.horizontal_acceleration - 1
+            # elif self.player.horizontal_acceleration < 0:
+            #     self.player.horizontal_acceleration = self.player.horizontal_acceleration + 1
+            #
+            # if self.player.vertical_acceleration > 0:
+            #     self.player.vertical_acceleration = self.player.vertical_acceleration - 1
+            # elif self.player.vertical_acceleration < 0:
+            #     self.player.vertical_acceleration = self.player.vertical_acceleration + 1
+
+
+            self.player.vertical_velocity = int(self.player.vertical_velocity)
+            self.player.horizontal_velocity = int(self.player.horizontal_velocity)
+            self.player.vertical_acceleration = int(self.player.vertical_acceleration)
+            self.player.horizontal_acceleration = int(self.player.horizontal_acceleration)
 
             self.player.horizontal_velocity += self.player.horizontal_acceleration
             if self.player.horizontal_velocity > self.player.velocity_maximum:
@@ -140,7 +160,7 @@ class Game:
             target_x = self.player.x + (self.player.radius * math.cos(self.tiltAngle))
             target_y = self.player.y + (self.player.radius * math.sin(self.tiltAngle))
             pygame.draw.circle(self.canvas.get_canvas(), Utility.COLORS['BLACK'], [int(target_x), int(target_y)], 5)
-
+            self.canvas.draw_status(self.player)
             self.player2.draw(self.canvas.get_canvas())
             self.player.can_accelerate = False
             self.canvas.update()
@@ -185,6 +205,21 @@ class Canvas:
         text = font.render(text, True, Utility.COLORS[color])
         textRect = text.get_rect()
         textRect.center = (x // 2, x // 2)
+        self.screen.blit(text, textRect)
+
+    def draw_status(self,player):
+        pygame.font.init()
+
+        font = pygame.font.Font('freesansbold.ttf', 32)
+
+        text = "HV: {}".format(player.horizontal_velocity)
+        text += "VV: {}".format(player.vertical_velocity)
+        text += "HA: {}".format(player.horizontal_acceleration)
+        text += "VA: {}".format(player.vertical_acceleration)
+        text = font.render(text, True, Utility.COLORS['BLACK'])
+
+        textRect = text.get_rect()
+        textRect.center = (1000,1000)
         self.screen.blit(text, textRect)
 
     def get_canvas(self):
