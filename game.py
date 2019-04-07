@@ -1,10 +1,10 @@
 import pygame
-from PIL import Image, ImageDraw, ImageFont
 from networkTCP import Network
+from Player import Player
 import time
 import math
-
-# GITKRACKEN
+window = (1920,1080)
+# https://www.rapidtables.com/web/color/RGB_Color.html
 COLORS = {
     'BLACK': (0, 0, 0),
     'WHITE': (255, 255, 255),
@@ -18,50 +18,6 @@ COLORS = {
 }
 available_colors = list(COLORS.keys())
 
-
-class Player():
-    radius = 25
-    uid = None
-    def __init__(self,startx, starty, color=(255, 0, 0)):
-        self.x = startx
-        self.y = starty
-        self.color = color
-        self.accelerate_north = 0
-        self.accelerate_south = 0
-        self.accelerate_east = 0
-        self.accelerate_west = 0
-        self.velocity_north = 0
-        self.velocity_south = 0
-        self.velocity_east = 0
-        self.velocity_west = 0
-
-    def draw(self, g):
-        pos = [self.x, self.y]
-        pygame.draw.circle(g, self.color, pos, self.radius)
-
-    def move(self, dirn):
-        """
-        :param dirn: 0 - 3 (right, left, up, down)
-        :return: None
-        """
-        #this controls your movement
-    
-        if dirn == 0:
-            self.velocity_east += self.accelerate_east
-            self.x += self.velocity_east
-        elif dirn == 1:
-            self.velocity_west += self.accelerate_west
-            self.x -= self.velocity_east
-        elif dirn == 2:
-            self.velocity_north += self.accelerate_north
-            self.y -= self.velocity_north
-        elif dirn == 3:
-            self.velocity_south += self.accelerate_south
-            self.y += self.velocity_south
-        else:
-            print("Direction is off.")
-
-
 class Game:
 
     tiltAngle = 0
@@ -72,11 +28,13 @@ class Game:
         self.player = Player(50, 50)
         self.player2 = Player(100, 100)
         self.canvas = Canvas(self.width, self.height, "Testing...")
-        pygame.mouse.set_visible(False)
+        # pygame.mouse.set_visible(False)
 
     def run(self):
         clock = pygame.time.Clock()
         run = True
+
+        player_can_accelerate = False
         while run:
             clock.tick(60)
 
@@ -91,29 +49,60 @@ class Game:
 
             keys = pygame.key.get_pressed()
 
+
+
+            #fucking accel
+            if self.player.ticks_until_acceleration >0:
+                self.player.ticks_until_acceleration -=1
+            elif self.player.ticks_until_acceleration == 0:
+                player_can_accelerate = True
+                self.player.ticks_until_acceleration = self.player.ticks_until_acceleration_default
+
+
             #this keeps you on screen
 
             if keys[pygame.K_RIGHT]:
                 if self.player.x <= self.width - self.player.velocity_east:
-                    self.player.accelerate_east += 1
+                    if player_can_accelerate:
+                        self.player.accelerate_east += 1
                     self.player.move(0)
 
             if keys[pygame.K_LEFT]:
                 if self.player.x >= self.player.velocity_west:
+                    if player_can_accelerate:
+                        self.player.accelerate_west += 1
                     self.player.move(1)
 
             if keys[pygame.K_UP]:
                 if self.player.y >= self.player.velocity_north:
+                    if player_can_accelerate:
+                        self.player.accelerate_north += 1
                     self.player.move(2)
 
             if keys[pygame.K_DOWN]:
                 if self.player.y <= self.height - self.player.velocity_south:
+                    if player_can_accelerate:
+                        self.player.accelerate_south += 1
                     self.player.move(3)
 
             if self.player.accelerate_east > 0:
                 self.player.accelerate_east -= 1
             if self.player.accelerate_east < 0:
                 self.player.accelerate_east == 0
+            if self.player.accelerate_west > 0:
+                self.player.accelerate_west -= 1
+            if self.player.accelerate_west < 0:
+                self.player.accelerate_west == 0
+            if self.player.accelerate_south > 0:
+                self.player.accelerate_south -= 1
+            if self.player.accelerate_south < 0:
+                self.player.accelerate_south == 0
+            if self.player.accelerate_north > 0:
+                self.player.accelerate_north -= 1
+            if self.player.accelerate_north < 0:
+                self.player.accelerate_north == 0
+
+
 
 
             # Send Network Stuff
@@ -131,6 +120,7 @@ class Game:
             pygame.draw.circle(self.canvas.get_canvas(), COLORS['BLACK'], [int(target_x), int(target_y)], 5)
 
             self.player2.draw(self.canvas.get_canvas())
+            player_can_accelerate = False
             self.canvas.update()
 
         pygame.quit()
@@ -183,5 +173,5 @@ class Canvas:
 
 
 if __name__ == "__main__":
-    g = Game(1200, 1000)
+    g = Game(window[0],window[1])
     g.run()
