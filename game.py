@@ -1,8 +1,10 @@
 import pygame
 from networkTCP import Network
 from Player import Player
+import Utility
 import time
 import math
+
 window = (1080,720)
 
 
@@ -71,7 +73,7 @@ class Game:
             self.tiltAngle  = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
             target_x = self.player.x + (self.player.radius * math.cos(self.tiltAngle))
             target_y = self.player.y + (self.player.radius * math.sin(self.tiltAngle))
-            pygame.draw.circle(self.canvas.get_canvas(), COLORS['BLACK'], [int(target_x), int(target_y)], 5)
+            pygame.draw.circle(self.canvas.get_canvas(), Utility.dCOLORS['BLACK'], [int(target_x), int(target_y)], 5)
 
             self.player2.draw(self.canvas.get_canvas())
             player_can_accelerate = False
@@ -123,7 +125,7 @@ class Canvas:
         return self.screen
 
     def draw_background(self):
-        self.screen.fill(COLORS['WHITE'])
+        self.screen.fill(Utility.COLORS['WHITE'])
 
 
 if __name__ == "__main__":

@@ -7,7 +7,8 @@ COLORS = {
     'PURPLE': (76, 14, 119),
     'YELLOW': (255, 255, 0),
     'ORANGE': (241, 171, 0),
-    'BROWN': (118, 57, 49)
+    'BROWN': (118, 57, 49),
+    'DEEPSKYBLUE': (0,191,255)
 }
 # https://www.rapidtables.com/web/color/RGB_Color.html
 

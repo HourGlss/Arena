@@ -29,7 +29,7 @@ class Player:
         up = 40
         healthbar_vert = [self.x + health_length, (self.y - up) + health_height], [self.x - health_length, (self.y - up) + health_height], [
             self.x - health_length, (self.y - up) - health_height], [self.x + health_length, (self.y - up) - health_height]
-        pygame.draw.polygon(g, pygame.Color(255, 0, 0), healthbar_vert)
+        pygame.draw.polygon(g, Utility.COLORS['RED'], healthbar_vert)
 
         #manabar
         mana_length = 20
@@ -37,7 +37,7 @@ class Player:
         up = 32
         manabar_vert = [self.x + mana_length, (self.y - up) + mana_height], [self.x - mana_length, (self.y - up) + mana_height], [
             self.x - mana_length, (self.y - up) - mana_height], [self.x + mana_length, (self.y - up) - mana_height]
-        pygame.draw.polygon(g, pygame.Color(0, 0, 255), manabar_vert)
+        pygame.draw.polygon(g, Utility.COLORS['DEEPSKYBLUE'], manabar_vert)
 
     def move(self, dirn):
         """
