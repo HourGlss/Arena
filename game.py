@@ -1,9 +1,9 @@
 import pygame
+from PIL import Image, ImageDraw, ImageFont
 from networkTCP import Network
 import time
 import math
 window = (1920,1080)
-
 # https://www.rapidtables.com/web/color/RGB_Color.html
 COLORS = {
     'BLACK': (0, 0, 0),
@@ -29,19 +29,8 @@ class Player:
         self.color = color
 
     def draw(self, g):
-       # self.draw_regular_polygon(g, self.color, 5, math.pi / 5, self.x, self.y, self.radius)
-       # self.draw_regular_polygon(g, self.color, 5, tiltangle, self.x, self.y, self.radius)
-        pygame.draw.circle(g,COLORS['BLUE'],(self.x,self.y),self.radius)
-
-
-    def draw_regular_polygon(self, surface, color, numSides, tiltAngle, x, y, radius):
-
-        pts = []
-        for i in range(numSides):
-            x = x + radius * math.cos(tiltAngle + math.pi * 2 * i / numSides)
-            y = y + radius * math.sin(tiltAngle + math.pi * 2 * i / numSides)
-            pts.append([int(x), int(y)])
-        pygame.draw.polygon(surface, color, pts)
+        pos = [self.x, self.y]
+        pygame.draw.circle(g, self.color, pos, self.radius)
 
     def move(self, dirn):
         """
@@ -58,9 +47,6 @@ class Player:
             self.y += self.velocity
         else:
             print("Direction is off.")
-
-    # def rotate(self, angle):
-    #     thingtorotate = pygame.transform.rotozoom(self.surface, angle, 1)
 
 
 class Game:
@@ -111,9 +97,13 @@ class Game:
             # Update Canvas
             self.canvas.draw_background()
 
+            #point cursor towards mouse
             mouse_x,mouse_y= pygame.mouse.get_pos()
             self.tiltAngle  = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
-                # self.tiltAngle = angle * (180 / math.pi)
+            target_x = self.player.x + (self.player.radius * math.cos(self.tiltAngle))
+            target_y = self.player.y + (self.player.radius * math.sin(self.tiltAngle))
+            pygame.draw.circle(self.canvas.get_canvas(), COLORS['BLACK'], [int(target_x), int(target_y)], 5)
+
             self.player.draw(self.canvas.get_canvas())
             self.player2.draw(self.canvas.get_canvas())
             self.canvas.update()
