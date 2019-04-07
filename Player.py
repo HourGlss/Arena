@@ -16,19 +16,19 @@ class Player:
 
         #heathbar
         health_length = 20
-        height = 3
-        up = 35
-        healthbar_vert = [self.x + length, (self.y - up) + height], [self.x - length, (self.y - up) + height], [
-            self.x - length, (self.y - up) - height], [self.x + length, (self.y - up) - height]
+        health_height = 3
+        up = 40
+        healthbar_vert = [self.x + health_length, (self.y - up) + health_height], [self.x - health_length, (self.y - up) + health_height], [
+            self.x - health_length, (self.y - up) - health_height], [self.x + health_length, (self.y - up) - health_height]
         pygame.draw.polygon(g, pygame.Color(255, 0, 0), healthbar_vert)
 
         #manabar
-        length = 20
-        height = 3
-        up = 35
-        healthbar_vert = [self.x + length, (self.y - up) + height], [self.x - length, (self.y - up) + height], [
-            self.x - length, (self.y - up) - height], [self.x + length, (self.y - up) - height]
-        pygame.draw.polygon(g, pygame.Color(255, 0, 0), healthbar_vert)
+        mana_length = 20
+        mana_height = 3
+        up = 32
+        manabar_vert = [self.x + mana_length, (self.y - up) + mana_height], [self.x - mana_length, (self.y - up) + mana_height], [
+            self.x - mana_length, (self.y - up) - mana_height], [self.x + mana_length, (self.y - up) - mana_height]
+        pygame.draw.polygon(g, pygame.Color(0, 0, 255), manabar_vert)
 
     def move(self, dirn):
         """
