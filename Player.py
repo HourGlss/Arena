@@ -40,16 +40,19 @@ class Player:
                 if self.horizontal_acceleration < self.acceleration_minimum:
                     self.horizontal_acceleration = self.acceleration_minimum
         elif dirn == 2:
+            #accelerate up
             if self.can_accelerate:
                 self.vertical_acceleration -= 1
                 if self.vertical_acceleration < self.acceleration_minimum:
                     self.vertical_acceleration = self.acceleration_minimum
         elif dirn == 3:
+            #accelerate down
             if self.can_accelerate:
                 self.vertical_acceleration += 1
                 if self.vertical_acceleration > self.acceleration_maximum:
                     self.vertical_acceleration = self.acceleration_maximum
         elif dirn == 4:
+            #stop is pressed
             self.horizontal_velocity = 0
             self.vertical_velocity = 0
             self.horizontal_acceleration = 0

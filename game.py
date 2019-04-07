@@ -15,7 +15,7 @@ class Game:
         self.net = Network()
         self.width = w
         self.height = h
-        self.player = Player(int(window[0]/2), int(window[1]/2))
+        self.player = Player(50,50)
         self.player2 = Player(100, 100)
         self.canvas = Canvas(self.width, self.height, "Testing...")
         # pygame.mouse.set_visible(False)
@@ -172,7 +172,7 @@ class Game:
         Send position to server
         :return: None
         """
-        data = str(self.player.x) + "," + str(self.player.y)
+        data = str(self.net.id) + ":" + str(self.player.x) + "," + str(self.player.y)
         reply = self.net.send(data)
         return reply
 
@@ -182,7 +182,7 @@ class Game:
             d = data.split(":")[1].split(",")
             return int(d[0]), int(d[1])
         except:
-            return 0, 0
+            return 0,0
 
 
 class Canvas:
