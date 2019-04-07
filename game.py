@@ -25,8 +25,15 @@ class Player():
     def __init__(self,startx, starty, color=(255, 0, 0)):
         self.x = startx
         self.y = starty
-        self.velocity = 7
         self.color = color
+        self.accelerate_north = 0
+        self.accelerate_south = 0
+        self.accelerate_east = 0
+        self.accelerate_west = 0
+        self.velocity_north = 0
+        self.velocity_south = 0
+        self.velocity_east = 0
+        self.velocity_west = 0
 
     def draw(self, g):
         pos = [self.x, self.y]
@@ -37,15 +44,20 @@ class Player():
         :param dirn: 0 - 3 (right, left, up, down)
         :return: None
         """
-
+        #this controls your movement
+    
         if dirn == 0:
-            self.x += self.velocity
+            self.velocity_east += self.accelerate_east
+            self.x += self.velocity_east
         elif dirn == 1:
-            self.x -= self.velocity
+            self.velocity_west += self.accelerate_west
+            self.x -= self.velocity_east
         elif dirn == 2:
-            self.y -= self.velocity
+            self.velocity_north += self.accelerate_north
+            self.y -= self.velocity_north
         elif dirn == 3:
-            self.y += self.velocity
+            self.velocity_south += self.accelerate_south
+            self.y += self.velocity_south
         else:
             print("Direction is off.")
 
@@ -68,6 +80,7 @@ class Game:
         while run:
             clock.tick(60)
 
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
@@ -78,21 +91,31 @@ class Game:
 
             keys = pygame.key.get_pressed()
 
+            #this keeps you on screen
+
             if keys[pygame.K_RIGHT]:
-                if self.player.x <= self.width - self.player.velocity:
+                if self.player.x <= self.width - self.player.velocity_east:
+                    self.player.accelerate_east += 1
                     self.player.move(0)
 
             if keys[pygame.K_LEFT]:
-                if self.player.x >= self.player.velocity:
+                if self.player.x >= self.player.velocity_west:
                     self.player.move(1)
 
             if keys[pygame.K_UP]:
-                if self.player.y >= self.player.velocity:
+                if self.player.y >= self.player.velocity_north:
                     self.player.move(2)
 
             if keys[pygame.K_DOWN]:
-                if self.player.y <= self.height - self.player.velocity:
+                if self.player.y <= self.height - self.player.velocity_south:
                     self.player.move(3)
+
+            if self.player.accelerate_east > 0:
+                self.player.accelerate_east -= 1
+            if self.player.accelerate_east < 0:
+                self.player.accelerate_east == 0
+
+
             # Send Network Stuff
             self.player2.x, self.player2.y = self.parse_data(self.send_data())
 
@@ -160,5 +183,5 @@ class Canvas:
 
 
 if __name__ == "__main__":
-    g = Game(500, 500)
+    g = Game(1200, 1000)
     g.run()
