@@ -5,17 +5,18 @@ import Utility
 import time
 import math
 
-window = (1920 , 1080)
+window = (1920, 1080)
 
 
 class Game:
     tiltAngle = 0
     players = []
+
     def __init__(self, w, h):
         self.net = Network()
         self.width = w
         self.height = h
-        self.player = Player(int(self.width/2),int(self.height/2))
+        self.player = Player(int(self.width / 2), int(self.height / 2))
         self.canvas = Canvas(self.width, self.height, "Testing...")
         self.players.append(self.player)
         # pygame.mouse.set_visible(False)
@@ -41,13 +42,10 @@ class Game:
                 self.player.accelerate_tick_wait = self.player.accelerate_tick_wait_default
             self.player.accelerate_tick_wait -= 1
 
-
-
             if keys[pygame.K_d]:
                 self.player.request_movement(0)
 
             if keys[pygame.K_a]:
-
                 self.player.request_movement(1)
 
             if keys[pygame.K_w]:
@@ -59,20 +57,19 @@ class Game:
             if keys[pygame.K_x]:
                 self.player.request_movement(4)
 
-
-
             # FRICTION for velocity
             if self.player.horizontal_velocity > 0:
                 self.player.horizontal_velocity = self.player.horizontal_velocity - self.player.horizontal_velocity / 3
             elif self.player.horizontal_velocity < 0:
-                self.player.horizontal_velocity = self.player.horizontal_velocity + abs(self.player.horizontal_velocity )/ 3
+                self.player.horizontal_velocity = self.player.horizontal_velocity + abs(
+                    self.player.horizontal_velocity) / 3
 
             if self.player.vertical_velocity > 0:
                 self.player.vertical_velocity = self.player.vertical_velocity - self.player.vertical_velocity / 3
             elif self.player.vertical_velocity < 0:
                 self.player.vertical_velocity = self.player.vertical_velocity + abs(self.player.vertical_velocity) / 3
 
-            #Friction for acceleration
+            # Friction for acceleration
             # if self.player.horizontal_acceleration > 0:
             #     self.player.horizontal_acceleration = self.player.horizontal_acceleration - 1
             # elif self.player.horizontal_acceleration < 0:
@@ -82,7 +79,6 @@ class Game:
             #     self.player.vertical_acceleration = self.player.vertical_acceleration - 1
             # elif self.player.vertical_acceleration < 0:
             #     self.player.vertical_acceleration = self.player.vertical_acceleration + 1
-
 
             self.player.vertical_velocity = int(self.player.vertical_velocity)
             self.player.horizontal_velocity = int(self.player.horizontal_velocity)
@@ -147,42 +143,38 @@ class Game:
             self.player.target_x = int(self.player.x + (self.player.radius * math.cos(self.tiltAngle)))
             self.player.target_y = int(self.player.y + (self.player.radius * math.sin(self.tiltAngle)))
 
-
-
-
             # Send Network Stuff
             # self.player2.x, self.player2.y = self.parse_data(self.send_data())
             server_players = self.send_data()
             if len(server_players) > 1:
-                #I have other players
+            # I have other players
                 for information in server_players:
-                #check to see if that player already exists
-                # if so update
+                    # check to see if that player already exists
+                    # if so update
                     for player in self.players:
                         if information['uid'] == player.uid:
                             player.x = information['x']
                             player.y = information['y']
-                            player.target_x = information['x']
-                            player.target_y = information['y']
+                            player.target_x = information['mouse_x']
+                            player.target_y = information['mouse_y']
                             break
-                else:
-                    # if not add
-                    p = Player(information['x'],information['y'])
-                    p.target_x = information['mouse_x']
-                    p.target_x = information['mouse_y']
-                    p.uid = information['uid']
-                    self.players.append(p)
+                    else:
+                        # if not add
 
+                        p = Player(information['x'], information['y'])
+                        p.target_x = information['mouse_x']
+                        p.target_y = information['mouse_y']
+                        p.uid = information['uid']
+                        self.players.append(p)
 
+            print(len(self.players))
 
-
-            # Update Canvas
+            # Update Canvas2
             self.canvas.draw_background()
 
-            #draw all the players
+            # draw all the players
             for player in self.players:
                 player.draw(self.canvas.get_canvas())
-
 
             self.canvas.draw_status(self.player)
             self.player.can_accelerate = False
@@ -191,7 +183,7 @@ class Game:
         pygame.quit()
 
     def send_data(self):
-        data_to_send = {"x":self.player.x, 'y': self.player.y, 'mouse_x': self.player.target_x,
+        data_to_send = {"x": self.player.x, 'y': self.player.y, 'mouse_x': self.player.target_x,
                         'mouse_y': self.player.target_y}
         # data = str(self.net.id) + ":" + str(self.player.x) + "," + str(self.player.y)
         reply = self.net.send(data_to_send)
@@ -205,7 +197,7 @@ class Game:
             d = data.split(":")[1].split(",")
             return int(d[0]), int(d[1])
         except:
-            return 0,0
+            return 0, 0
 
 
 class Canvas:
@@ -230,7 +222,7 @@ class Canvas:
         textRect.center = (x // 2, x // 2)
         self.screen.blit(text, textRect)
 
-    def draw_status(self,player):
+    def draw_status(self, player):
         pygame.font.init()
 
         font = pygame.font.Font('freesansbold.ttf', 32)
@@ -242,7 +234,7 @@ class Canvas:
         text = font.render(text, True, Utility.COLORS['BLACK'])
 
         textRect = text.get_rect()
-        textRect.center = (1000,1000)
+        textRect.center = (1000, 1000)
         self.screen.blit(text, textRect)
 
     def get_canvas(self):

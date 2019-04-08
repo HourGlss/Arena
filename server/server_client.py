@@ -1,4 +1,11 @@
 class Client:
+    x = 0
+    y = 0
+    target_x = 0
+    target_y = 0
+    addr = None
+    uid = None
+
     last_seen = None
     def __init__(self, addr, uid):
         self.uid = uid
@@ -6,7 +13,6 @@ class Client:
 
     def set_pos(self, pos):
         self.x, self.y = pos
-        self.pos = pos
 
     def set_target(self,pos):
         self.target_x,self.target_y = pos
@@ -20,4 +26,5 @@ class Client:
         return self.addr
 
     def get_status(self):
-        return {'uid':self.uid,'x':self.x,'y':self.y}
+        #THIS IS OUTGOING DATA FROM THE SERVER
+        return {'uid':self.uid,'x':self.x,'y':self.y,'mouse_x':self.target_x,'mouse_y':self.target_y}

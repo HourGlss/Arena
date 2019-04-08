@@ -61,7 +61,7 @@ while True:
     client_received_from.last_seen = time.time()
     data_to_send = []
     for client in clients:
-        if now - client.last_seen >= 1:
+        if now - client.last_seen >= 10:
             print("removing",client.uid)
             clients.remove(client)
 
