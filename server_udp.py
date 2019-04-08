@@ -1,6 +1,5 @@
 import socket
-from server.server_client import Client
-import sys
+from server_client import Client
 import random
 import pickle
 import time
