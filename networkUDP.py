@@ -28,6 +28,7 @@ class Network:
             self.client.sendto(pickle.dumps(data), self.addr)
             #TODO THIS MAY BE AN ISSUE, WE ARE WAITING TO RECEIVE A RESPONSE HERE. NOT IDEAL
             data_rec, addr_rec = self.client.recvfrom(1024)  # buffer size is 1024 bytes
+            print("-",data_rec,addr_rec)
             dict_response = pickle.loads(data_rec)
             if self.uid is None:
                 self.set_uid(dict_response[0]['uid'])

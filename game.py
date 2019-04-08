@@ -7,10 +7,11 @@ import math
 
 window = (1920, 1080)
 
-
+times = {}
 class Game:
     tiltAngle = 0
     players = []
+
 
     def __init__(self, w, h):
         self.net = Network()
@@ -22,10 +23,17 @@ class Game:
         # pygame.mouse.set_visible(False)
 
     def run(self):
+        global times
+        iters = 0
         clock = pygame.time.Clock()
         run = True
+        firstround = True
         while run:
-            clock.tick(60)
+            if firstround:
+                times['roundstart'] = []
+            times['roundstart'].append(time.time())
+
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
@@ -56,7 +64,9 @@ class Game:
 
             if keys[pygame.K_x]:
                 self.player.request_movement(4)
-
+            if firstround:
+                times['movement'] = []
+            times['movement'].append(time.time())
             # FRICTION for velocity
             if self.player.horizontal_velocity > 0:
                 self.player.horizontal_velocity = self.player.horizontal_velocity - self.player.horizontal_velocity / 3
@@ -68,7 +78,9 @@ class Game:
                 self.player.vertical_velocity = self.player.vertical_velocity - self.player.vertical_velocity / 3
             elif self.player.vertical_velocity < 0:
                 self.player.vertical_velocity = self.player.vertical_velocity + abs(self.player.vertical_velocity) / 3
-
+            if firstround:
+                times['friction'] = []
+            times['friction'].append(time.time())
             # Friction for acceleration
             # if self.player.horizontal_acceleration > 0:
             #     self.player.horizontal_acceleration = self.player.horizontal_acceleration - 1
@@ -98,7 +110,9 @@ class Game:
             elif self.player.vertical_velocity < self.player.velocity_minimum:
                 self.player.vertical_velocity = self.player.velocity_minimum
             requested_y = self.player.y + self.player.vertical_velocity
-
+            if firstround:
+                times['velocity'] = []
+            times['velocity'].append(time.time())
             # DETECT COLLISION AND ALLOW OR NOT. If collision happens, move the player to the "wall" and then stop acceleration and velocity
 
             # MAY NEED TO check with radius
@@ -136,21 +150,28 @@ class Game:
                 self.player.y = self.height - self.player.radius
                 self.player.vertical_velocity = 0
                 self.player.vertical_acceleration = 0
-
+            if firstround:
+                times['collision'] = []
+            times['collision'].append(time.time())
             # math for reticle
             mouse_x, mouse_y = pygame.mouse.get_pos()
             self.tiltAngle = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
             self.player.target_x = int(self.player.x + (self.player.radius * math.cos(self.tiltAngle)))
             self.player.target_y = int(self.player.y + (self.player.radius * math.sin(self.tiltAngle)))
-
+            if firstround:
+                times['reticle'] = []
+            times['reticle'].append(time.time())
             # Send Network Stuff
             # self.player2.x, self.player2.y = self.parse_data(self.send_data())
             server_players = self.send_data()
+            print(server_players)
+
             if len(server_players) > 1:
             # I have other players
                 for information in server_players:
                     # check to see if that player already exists
                     # if so update
+                    print("inf",str(information))
                     for player in self.players:
                         if information['uid'] == player.uid:
                             player.x = information['x']
@@ -166,7 +187,9 @@ class Game:
                         p.target_y = information['mouse_y']
                         p.uid = information['uid']
                         self.players.append(p)
-
+            if firstround:
+                times['network'] = []
+            times['network'].append(time.time())
             # print(len(self.players))
 
             # Update Canvas2
@@ -175,11 +198,22 @@ class Game:
             # draw all the players
             for player in self.players:
                 player.draw(self.canvas.get_canvas())
-
-            self.canvas.draw_status(self.player)
-            self.player.can_accelerate = False
+            if firstround:
+                times['draw'] = []
+            times['draw'].append(time.time())
+            # self.canvas.draw_status(self.player)
             self.canvas.update()
+            if firstround:
+                times['update'] = []
+            times['update'].append(time.time())
+            clock.tick(60)
+            self.player.can_accelerate = False
 
+            firstround = False
+            iters +=1
+            if iters == 1000:
+                break
+        print(times)
         pygame.quit()
 
     def send_data(self):
