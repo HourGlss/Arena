@@ -8,6 +8,9 @@ class Client:
         self.x, self.y = pos
         self.pos = pos
 
+    def set_target(self,pos):
+        self.target_x,self.target_y = pos
+
     def __eq__(self, other):
         if self.addr == other.addr:
             return True

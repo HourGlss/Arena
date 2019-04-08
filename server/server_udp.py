@@ -50,6 +50,7 @@ while True:
     for client in clients:
         if client.addr == addr_rec:
             client.set_pos((data['x'], data['y']))
+            client.set_target((data['mouse_x'],data['mouse_y']))
             client_received_from = client
             break
     else:

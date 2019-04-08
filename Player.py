@@ -18,6 +18,8 @@ class Player:
     accelerate_tick_wait = 0
     accelerate_tick_wait_default = 5
     can_accelerate = False
+    target_x = 0
+    target_y = 0
 
     def __init__(self, startx, starty, color=(255, 0, 0)):
         self.x = startx
@@ -40,25 +42,25 @@ class Player:
                 if self.horizontal_acceleration < self.acceleration_minimum:
                     self.horizontal_acceleration = self.acceleration_minimum
         elif dirn == 2:
-            #accelerate up
+            # accelerate up
             if self.can_accelerate:
                 self.vertical_acceleration -= 1
                 if self.vertical_acceleration < self.acceleration_minimum:
                     self.vertical_acceleration = self.acceleration_minimum
         elif dirn == 3:
-            #accelerate down
+            # accelerate down
             if self.can_accelerate:
                 self.vertical_acceleration += 1
                 if self.vertical_acceleration > self.acceleration_maximum:
                     self.vertical_acceleration = self.acceleration_maximum
         elif dirn == 4:
-            #stop is pressed
+            # stop is pressed
             self.horizontal_velocity = 0
             self.vertical_velocity = 0
             self.horizontal_acceleration = 0
             self.vertical_acceleration = 0
 
-    def draw(self, g):
+    def draw(self, g, ):
         # your player
         pos = [self.x, self.y]
         pygame.draw.circle(g, self.color, pos, self.radius)
@@ -82,3 +84,5 @@ class Player:
                            self.x - mana_length, (self.y - up) - mana_height], [self.x + mana_length,
                                                                                 (self.y - up) - mana_height]
         pygame.draw.polygon(g, Utility.COLORS['DEEPSKYBLUE'], manabar_vert)
+
+        pygame.draw.circle(g, Utility.COLORS['BLACK'], [int(self.target_x), int(self.target_y)], 5)

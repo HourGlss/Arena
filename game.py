@@ -1,5 +1,5 @@
 import pygame
-from networkTCP import Network
+from networkUDP import Network
 from Player import Player
 import Utility
 import time
@@ -10,14 +10,14 @@ window = (1920 , 1080)
 
 class Game:
     tiltAngle = 0
-
+    players = []
     def __init__(self, w, h):
         self.net = Network()
         self.width = w
         self.height = h
-        self.player = Player(50,50)
-        self.player2 = Player(100, 100)
+        self.player = Player(int(self.width/2),int(self.height/2))
         self.canvas = Canvas(self.width, self.height, "Testing...")
+        self.players.append(self.player)
         # pygame.mouse.set_visible(False)
 
     def run(self):
@@ -141,39 +141,62 @@ class Game:
                 self.player.vertical_velocity = 0
                 self.player.vertical_acceleration = 0
 
-
-
+            # math for reticle
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            self.tiltAngle = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
+            self.player.target_x = int(self.player.x + (self.player.radius * math.cos(self.tiltAngle)))
+            self.player.target_y = int(self.player.y + (self.player.radius * math.sin(self.tiltAngle)))
 
 
 
 
             # Send Network Stuff
-            self.player2.x, self.player2.y = self.parse_data(self.send_data())
+            # self.player2.x, self.player2.y = self.parse_data(self.send_data())
+            server_players = self.send_data()
+            if len(server_players) > 1:
+                #I have other players
+                for information in server_players:
+                #check to see if that player already exists
+                # if so update
+                    for player in self.players:
+                        if information['uid'] == player.uid:
+                            player.x = information['x']
+                            player.y = information['y']
+                            player.target_x = information['x']
+                            player.target_y = information['y']
+                            break
+                else:
+                    # if not add
+                    p = Player(information['x'],information['y'])
+                    p.target_x = information['mouse_x']
+                    p.target_x = information['mouse_y']
+                    p.uid = information['uid']
+                    self.players.append(p)
+
+
+
 
             # Update Canvas
             self.canvas.draw_background()
-            self.player.draw(self.canvas.get_canvas())
 
-            # point cursor towards mouse
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            self.tiltAngle = math.atan2(mouse_y - self.player.y, mouse_x - self.player.x)
-            target_x = self.player.x + (self.player.radius * math.cos(self.tiltAngle))
-            target_y = self.player.y + (self.player.radius * math.sin(self.tiltAngle))
-            pygame.draw.circle(self.canvas.get_canvas(), Utility.COLORS['BLACK'], [int(target_x), int(target_y)], 5)
+            #draw all the players
+            for player in self.players:
+                player.draw(self.canvas.get_canvas())
+
+
             self.canvas.draw_status(self.player)
-            self.player2.draw(self.canvas.get_canvas())
             self.player.can_accelerate = False
             self.canvas.update()
 
         pygame.quit()
 
     def send_data(self):
-        """
-        Send position to server
-        :return: None
-        """
-        data = str(self.net.id) + ":" + str(self.player.x) + "," + str(self.player.y)
-        reply = self.net.send(data)
+        data_to_send = {"x":self.player.x, 'y': self.player.y, 'mouse_x': self.player.target_x,
+                        'mouse_y': self.player.target_y}
+        # data = str(self.net.id) + ":" + str(self.player.x) + "," + str(self.player.y)
+        reply = self.net.send(data_to_send)
+        if self.player.uid is None:
+            self.player.uid = self.net.uid
         return reply
 
     @staticmethod
