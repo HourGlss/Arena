@@ -43,9 +43,9 @@ currentId = "0"
 while True:
     now = time.time()
     data_rec, addr_rec = s.recvfrom(1024)  # buffer size is 1024 bytes
-    print(addr_rec)
+    # print(addr_rec)
     data = pickle.loads(data_rec)
-    print(data)
+    # print(data)
     client_received_from = None
     for client in clients:
         if client.addr == addr_rec:
@@ -62,7 +62,7 @@ while True:
     data_to_send = []
     for client in clients:
         if now - client.last_seen >= 10:
-            print("removing",client.uid)
+            # print("removing",client.uid)
             clients.remove(client)
 
         if client.addr != addr_rec:

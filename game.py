@@ -167,7 +167,7 @@ class Game:
                         p.uid = information['uid']
                         self.players.append(p)
 
-            print(len(self.players))
+            # print(len(self.players))
 
             # Update Canvas2
             self.canvas.draw_background()
