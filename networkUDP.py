@@ -39,7 +39,7 @@ class Network:
                 data_rec, addr_rec = incoming.recvfrom(1024)
                 self.last_received = pickle.loads(data_rec)
                 # print(data_rec)
-                print(self.last_received)
+                # print(self.last_received)
                 if self.uid is None:
                     self.set_uid(self.last_received[0]['uid'])
                 self.last_received_lock = False
@@ -65,10 +65,15 @@ class Network:
             return True
         return False
 
-    def receive(self):
+    def recieve(self):
         if not self.last_received_lock:
             self.last_received_lock = True
-            data_to_return = self.last_received
+            if self.last_received is not None:
+                data_to_return = self.last_received
+                self.last_received = None
+            else:
+                self.last_received_lock = False
+                return False
             self.last_received_lock = False
             return data_to_return
         return False
@@ -85,20 +90,21 @@ class Network:
 
 
 #SECOND POC
-N = Network()
-last_sent = None
-while True:
-    now = time.time()
-    if last_sent == None or now - last_sent >= .06:
-        data_to_send = {"x": random.randint(0, 1024), 'y': random.randint(0, 768),'mouse_x':random.randint(0, 768),'mouse_y':random.randint(0, 768)}
-        response = False
-        response = N.send(data_to_send)
-        if response:
-            # print("data was Qd to be sent")
-            pass
-        received = N.receive()
-        if received != False:
-            print("was received",received)
-
-        # print("My UID is {}".format(N.uid))
-        last_sent = now
+# N = Network()
+# last_sent = None
+# while True:
+#     now = time.time()
+#     if last_sent == None or now - last_sent >= .06:
+#         data_to_send = {"x": random.randint(0, 1024), 'y': random.randint(0, 768),'mouse_x':random.randint(0, 768),'mouse_y':random.randint(0, 768)}
+#         response = False
+#         response = N.send(data_to_send)
+#         if response:
+#             # print("data was Qd to be sent")
+#             pass
+#         received = N.recieve()
+#         if received != False:
+#             # print("was received",received)
+#             pass
+#
+#         # print("My UID is {}".format(N.uid))
+#         last_sent = now

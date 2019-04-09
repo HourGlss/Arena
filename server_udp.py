@@ -48,7 +48,6 @@ while True:
         pass
     # print(addr_rec)
     data = pickle.loads(data_rec)
-    print(data)
     client_received_from = None
     for client in clients:
         if client.addr == addr_rec:

@@ -163,30 +163,32 @@ class Game:
             times['reticle'].append(time.time())
             # Send Network Stuff
             # self.player2.x, self.player2.y = self.parse_data(self.send_data())
-            server_players = self.send_data()
-            print(server_players)
+            self.send_data()
+            server_players = self.recieve_data()
 
-            if len(server_players) > 1:
-            # I have other players
-                for information in server_players:
-                    # check to see if that player already exists
-                    # if so update
-                    print("inf",str(information))
-                    for player in self.players:
-                        if information['uid'] == player.uid:
-                            player.x = information['x']
-                            player.y = information['y']
-                            player.target_x = information['mouse_x']
-                            player.target_y = information['mouse_y']
-                            break
-                    else:
-                        # if not add
+            if server_players != False:
+                print(server_players)
+                if len(server_players) > 1:
+                # I have other players
+                    for information in server_players:
+                        # check to see if that player already exists
+                        # if so update
+                        print("inf",str(information))
+                        for player in self.players:
+                            if information['uid'] == player.uid:
+                                player.x = information['x']
+                                player.y = information['y']
+                                player.target_x = information['mouse_x']
+                                player.target_y = information['mouse_y']
+                                break
+                        else:
+                            # if not add
 
-                        p = Player(information['x'], information['y'])
-                        p.target_x = information['mouse_x']
-                        p.target_y = information['mouse_y']
-                        p.uid = information['uid']
-                        self.players.append(p)
+                            p = Player(information['x'], information['y'])
+                            p.target_x = information['mouse_x']
+                            p.target_y = information['mouse_y']
+                            p.uid = information['uid']
+                            self.players.append(p)
             if firstround:
                 times['network'] = []
             times['network'].append(time.time())
@@ -224,6 +226,10 @@ class Game:
         if self.player.uid is None:
             self.player.uid = self.net.uid
         return reply
+
+    def recieve_data(self):
+        return self.net.recieve()
+
 
     @staticmethod
     def parse_data(data):
