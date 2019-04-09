@@ -24,14 +24,15 @@ def generate_uid():
     return uid
 
 
-print("Starting UDP server")
+print("Starting this UDP server on 5555")
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 server = ''
-port = 5555
+incoming_port = 5555
+outgoing_port = 5556
 
 try:
-    s.bind((server, port))
+    s.bind((server, incoming_port))
 
 except socket.error as e:
     print(str(e))
@@ -41,10 +42,13 @@ currentId = "0"
 
 while True:
     now = time.time()
-    data_rec, addr_rec = s.recvfrom(1024)  # buffer size is 1024 bytes
+    try:
+        data_rec, addr_rec = s.recvfrom(1024)  # buffer size is 1024 bytes
+    except:
+        pass
     # print(addr_rec)
     data = pickle.loads(data_rec)
-    # print(data)
+    print(data)
     client_received_from = None
     for client in clients:
         if client.addr == addr_rec:
@@ -67,4 +71,7 @@ while True:
         if client.addr != addr_rec:
             data_to_send.append(client.get_status())
     data_to_send.insert(0,client_received_from.get_status())
+    addr_rec = list(addr_rec)
+    addr_rec[1] = 5556
+    addr_rec = tuple(addr_rec)
     s.sendto(pickle.dumps(data_to_send), addr_rec)
