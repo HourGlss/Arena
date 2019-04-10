@@ -43,9 +43,9 @@ currentId = "0"
 while True:
     now = time.time()
     try:
-        data_rec, addr_rec = s.recvfrom(1024)  # buffer size is 1024 bytes
+        data_rec, addr_rec = s.recvfrom(2048)  # buffer size is 1024 bytes
     except:
-        pass
+        continue
     # print(addr_rec)
     data = pickle.loads(data_rec)
     client_received_from = None

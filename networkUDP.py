@@ -52,7 +52,9 @@ class Network:
                 self.to_send_lock = True
                 if self.to_send is not None:
                     # print("data was actually sent")
-                    outgoing.sendto(pickle.dumps(self.to_send), self.outgoing_addr)
+                    pickled = pickle.dumps(self.to_send)
+                    print(sys.getsizeof(pickled))
+                    outgoing.sendto(pickled, self.outgoing_addr)
 
                 self.to_send_lock = False
                 time.sleep(self.sleep_time)

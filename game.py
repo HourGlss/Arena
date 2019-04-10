@@ -2,6 +2,7 @@ import pygame
 from networkUDP import Network
 from Player import Player
 import Utility
+import sys
 import time
 import math
 from GameData import GameData
@@ -11,7 +12,6 @@ window = (1920, 1080)
 class Game:
     tiltAngle = 0
     players = []
-
 
     def __init__(self, w, h):
         self.net = Network()
