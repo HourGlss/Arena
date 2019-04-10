@@ -38,7 +38,6 @@ except socket.error as e:
     print(str(e))
 
 clients = []
-currentId = "0"
 
 while True:
     now = time.time()
@@ -55,15 +54,14 @@ while True:
                 client.set_pos((data['x'], data['y']))
                 client.set_target((data['mouse_x'],data['mouse_y']))
                 client_received_from = client
-            else:
-                continue
             break
     else:
         client_to_add = Client(addr_rec, generate_uid())
         client_to_add.set_pos((data['x'], data['y']))
         clients.append(client_to_add)
         client_received_from = client_to_add
-
+    if client_received_from is None:
+        continue
     client_received_from.last_seen = time.time()
     data_to_send = []
     for client in clients:
