@@ -53,7 +53,6 @@ class Network:
                 if self.to_send is not None:
                     # print("data was actually sent")
                     pickled = pickle.dumps(self.to_send)
-                    print(sys.getsizeof(pickled))
                     outgoing.sendto(pickled, self.outgoing_addr)
 
                 self.to_send_lock = False

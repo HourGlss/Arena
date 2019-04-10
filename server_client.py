@@ -1,3 +1,4 @@
+from GameData import GameData
 class Client:
     x = 0
     y = 0
@@ -10,6 +11,7 @@ class Client:
 
     last_seen = None
     def __init__(self, addr, uid):
+        print("New client",addr)
         self.uid = uid
         self.addr = addr
 

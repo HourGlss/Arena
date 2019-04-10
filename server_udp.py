@@ -56,7 +56,6 @@ while True:
                 client.set_target((data['mouse_x'],data['mouse_y']))
                 client_received_from = client
             else:
-                print("received out of order packet, DROPPED")
                 continue
             break
     else:
