@@ -6,6 +6,8 @@ class Client:
     addr = None
     uid = None
 
+
+
     last_seen = None
     def __init__(self, addr, uid):
         self.uid = uid

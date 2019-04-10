@@ -6,6 +6,8 @@ class Player:
     radius = 25
     uid = None
 
+    health = 0
+    mana = 0
     # MOVEMENT
     acceleration_maximum = 5
     acceleration_minimum = -acceleration_maximum

@@ -51,9 +51,12 @@ while True:
     client_received_from = None
     for client in clients:
         if client.addr == addr_rec:
-            client.set_pos((data['x'], data['y']))
-            client.set_target((data['mouse_x'],data['mouse_y']))
-            client_received_from = client
+            if data['time_made'] > client.last_seen:
+                client.set_pos((data['x'], data['y']))
+                client.set_target((data['mouse_x'],data['mouse_y']))
+                client_received_from = client
+            else:
+                print("received out of order packet, DROPPED")
             break
     else:
         client_to_add = Client(addr_rec, generate_uid())

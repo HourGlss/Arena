@@ -4,6 +4,7 @@ from Player import Player
 import Utility
 import time
 import math
+from GameData import GameData
 
 window = (1920, 1080)
 
@@ -174,13 +175,10 @@ class Game:
         pygame.quit()
 
     def send_data(self):
-        data_to_send = {"x": self.player.x, 'y': self.player.y, 'mouse_x': self.player.target_x,
-                        'mouse_y': self.player.target_y}
-        # data = str(self.net.id) + ":" + str(self.player.x) + "," + str(self.player.y)
-        reply = self.net.send(data_to_send)
+        data_to_send = GameData(self.player).get_dictionary()
+        self.net.send(data_to_send)
         if self.player.uid is None:
             self.player.uid = self.net.uid
-        return reply
 
     def receive_data(self):
         return self.net.receive()
