@@ -63,7 +63,10 @@ while True:
         client_to_add.set_pos((data['x'], data['y']))
         clients.append(client_to_add)
         client_received_from = client_to_add
-    client_received_from.last_seen = time.time()
+    try:
+        client_received_from.last_seen = time.time()
+    except AttributeError:
+        pass
     data_to_send = []
     for client in clients:
         if now - client.last_seen >= 10:
