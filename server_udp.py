@@ -57,16 +57,15 @@ while True:
                 client_received_from = client
             else:
                 print("received out of order packet, DROPPED")
+                continue
             break
     else:
         client_to_add = Client(addr_rec, generate_uid())
         client_to_add.set_pos((data['x'], data['y']))
         clients.append(client_to_add)
         client_received_from = client_to_add
-    try:
-        client_received_from.last_seen = time.time()
-    except AttributeError:
-        pass
+
+    client_received_from.last_seen = time.time()
     data_to_send = []
     for client in clients:
         if now - client.last_seen >= 10:
