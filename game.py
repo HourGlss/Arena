@@ -137,8 +137,9 @@ class Game:
             # self.player2.x, self.player2.y = self.parse_data(self.send_data())
             self.send_data()
             server_players = self.receive_data()
-
             if server_players != False:
+                if self.player.uid is None:
+                    self.player.uid = self.net.uid
                 if len(server_players) > 1:
                 # I have other players
                     for information in server_players:
@@ -156,6 +157,7 @@ class Game:
                             # if not add
 
                             p = Player(information['x'], information['y'])
+                            print("adding player from network")
                             p.target_x = information['mouse_x']
                             p.target_y = information['mouse_y']
                             p.uid = information['uid']
@@ -177,8 +179,6 @@ class Game:
     def send_data(self):
         data_to_send = GameData(self.player).get_dictionary()
         self.net.send(data_to_send)
-        if self.player.uid is None:
-            self.player.uid = self.net.uid
 
     def receive_data(self):
         return self.net.receive()
