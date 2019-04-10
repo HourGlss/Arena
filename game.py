@@ -135,16 +135,15 @@ class Game:
             # Send Network Stuff
             # self.player2.x, self.player2.y = self.parse_data(self.send_data())
             self.send_data()
-            server_players = self.recieve_data()
+            server_players = self.receive_data()
 
             if server_players != False:
-                print(server_players)
                 if len(server_players) > 1:
                 # I have other players
                     for information in server_players:
                         # check to see if that player already exists
                         # if so update
-                        print("inf",str(information))
+                        # print("inf",str(information))
                         for player in self.players:
                             if information['uid'] == player.uid:
                                 player.x = information['x']
@@ -172,11 +171,6 @@ class Game:
             self.canvas.update()
             clock.tick(60)
             self.player.can_accelerate = False
-
-            firstround = False
-            iters +=1
-            if iters == 1000:
-                break
         pygame.quit()
 
     def send_data(self):
@@ -188,8 +182,8 @@ class Game:
             self.player.uid = self.net.uid
         return reply
 
-    def recieve_data(self):
-        return self.net.recieve()
+    def receive_data(self):
+        return self.net.receive()
 
 
     @staticmethod

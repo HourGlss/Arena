@@ -65,13 +65,18 @@ class Network:
             return True
         return False
 
-    def recieve(self):
+    def receive(self):
+        # print("receive is being called")
         if not self.last_received_lock:
             self.last_received_lock = True
+            # print("it's not locked")
             if self.last_received is not None:
+                # print("It isnt none")
                 data_to_return = self.last_received
+                # print(data_to_return)
                 self.last_received = None
             else:
+                # print("It is none")
                 self.last_received_lock = False
                 return False
             self.last_received_lock = False
