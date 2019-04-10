@@ -62,11 +62,11 @@ while True:
         client_received_from = client_to_add
     if client_received_from is None:
         continue
-    client_received_from.last_seen = time.time()
+    client_received_from.last_seen = data['time_made']
     data_to_send = []
     for client in clients:
         if now - client.last_seen >= 10:
-            # print("removing",client.uid)
+            print("removing",client.uid)
             clients.remove(client)
 
         if client.addr != addr_rec:
