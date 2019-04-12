@@ -16,11 +16,8 @@ class Network:
     to_send_lock = False
     stop = False
     def __init__(self):
-        self.host = config.host_ip  # For this to work on your machine this must be equal to the ipv4 address of the machine running the server
-        # You can find this address by typing ipconfig in CMD and copying the ipv4 address. Again this must be the servers
-        # ipv4 address. This feild will be the same for all your clients.
+        self.host = config.host_ip
         self.outgoing_port = 6555
-
         self.outgoing_addr = (self.host, self.outgoing_port)
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         outgoing = threading.Thread(target=self.outgoing,args = (sock,))
@@ -42,18 +39,19 @@ class Network:
                 self.socket_lock = True
                 data_rec = None
                 try:
-                    data_rec, addr_rec = sock.recv(1024)
+                    data_rec = sock.recv(1024)
 
                     self.last_received = pickle.loads(data_rec)
                     # print(data_rec)
                     # print("incoming received",self.last_received)
                     if self.uid is None:
                         self.set_uid(self.last_received[0]['uid'])
-                except:
-                    continue
+                except Exception as e:
+                    # print("incoming didn't receive",e)
+                    pass
                 finally:
                     self.socket_lock = False
-                # print("incoming, socket wasnt locked, now it isnt")
+                    # print("incoming, socket wasnt locked, now it isnt")
 
 
                 if self.stop:
@@ -109,7 +107,7 @@ class Network:
             if self.last_received is not None:
                 # print("receive It isnt none")
                 data_to_return = self.last_received
-                print(data_to_return)
+                # print(data_to_return)
                 self.last_received = None
             else:
                 # print("receive It is none")

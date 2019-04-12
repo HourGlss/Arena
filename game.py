@@ -142,10 +142,10 @@ class Game:
             if server_players != False:
                 if self.player.uid is None:
                     self.player.uid = self.net.uid
-                    print("my id is",self.player.uid)
+                    # print("my id is",self.player.uid)
 
             # I have other players
-                print(server_players)
+            #     print(server_players)
                 for information in server_players:
                     # check to see if that player already exists
                     # if so update
