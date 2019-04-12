@@ -39,12 +39,12 @@ class Server:
             time.sleep(self.sleep_time)
             now = time.time()
             if not self.clients_lock:
-                print("main game loop")
+                # print("main game loop")
                 self.clients_lock = True
                 for i in range(len(self.clients)):
                     client = self.clients[i]
                     if now - client.last_seen >= 3.5:
-                        print("Removing", client.addr, " -- ", client.uid)
+                        print("Removing", client.address, " -- ", client.uid)
 
                         self.clients.remove(client)
                     elif now - client.last_seen >= 3:
@@ -74,7 +74,7 @@ class Server:
             data_received ,address_received_from = s.recvfrom(1024)
             self.last_received = pickle.loads(data_received)
             if not self.clients_lock:
-                print("incoming loop")
+                # print("incoming loop")
                 self.clients_lock = True
                 client_received_from = None
                 for client in self.clients:
@@ -109,7 +109,7 @@ class Server:
             now = time.time()
             if not self.clients_lock:
                 self.clients_lock = True
-                print("outgoing loop")
+                # print("outgoing loop")
                 for i in range(len(self.clients)):
                     client = self.clients[i]
                     self.clients.remove(client)

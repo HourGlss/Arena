@@ -20,7 +20,7 @@ class Client:
         self.target_x,self.target_y = pos
 
     def __eq__(self, other):
-        if self.address == other.addr:
+        if self.address == other.address:
             return True
         return False
 
