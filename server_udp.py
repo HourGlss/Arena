@@ -30,22 +30,21 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 server = ''
 incoming_port = 5555
 outgoing_port = 5556
-
 try:
     s.bind((server, incoming_port))
 
 except socket.error as e:
     print(str(e))
-
+# print("we got here")
 clients = []
 
 while True:
     now = time.time()
-    try:
-        data_rec, addr_rec = s.recvfrom(2048)  # buffer size is 1024 bytes
-    except:
-        continue
-    # print(addr_rec)
+    data_rec = None
+    # print("wait for data")
+    data_rec, addr_rec = s.recvfrom(1024)  # buffer size is 1024 bytes
+    # print("never getting here")
+    # print("data received",data_rec)
     data = pickle.loads(data_rec)
     client_received_from = None
     for client in clients:
@@ -67,7 +66,7 @@ while True:
     data_to_send = []
     for client in clients:
         if now - client.last_seen >= 10:
-            print("removing",client.addr," -- ",client.uid)
+            print("Removing",client.addr," -- ",client.uid)
             clients.remove(client)
 
         if client.addr != addr_rec:

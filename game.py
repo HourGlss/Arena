@@ -22,7 +22,6 @@ class Game:
         # pygame.mouse.set_visible(False)
         self.players.append(self.player)
     def run(self):
-        iters = 0
         clock = pygame.time.Clock()
         run = True
         while run:
@@ -31,11 +30,11 @@ class Game:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.net.stop()
+                    self.net.stop_networking()
                     run = False
 
                 if event.type == pygame.K_ESCAPE:
-                    self.net.stop()
+                    self.net.stop_networking()
                     run = False
 
             keys = pygame.key.get_pressed()
@@ -155,13 +154,13 @@ class Game:
                             break
                     else:
                         # if not add
-
-                        p = Player(information['x'], information['y'])
-                        print("adding player from network")
-                        p.target_x = information['mouse_x']
-                        p.target_y = information['mouse_y']
-                        p.uid = information['uid']
-                        self.players.append(p)
+                        if information['uid'] != self.player.uid:
+                            p = Player(information['x'], information['y'])
+                            print("adding player from network")
+                            p.target_x = information['mouse_x']
+                            p.target_y = information['mouse_y']
+                            p.uid = information['uid']
+                            self.players.append(p)
             # print(len(self.players))
 
             # Update Canvas2
@@ -177,6 +176,7 @@ class Game:
         pygame.quit()
 
     def send_data(self):
+        # print("Trying to send data")
         data_to_send = GameData(self.player).get_dictionary()
         self.net.send(data_to_send)
 

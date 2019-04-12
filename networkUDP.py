@@ -46,28 +46,34 @@ class Network:
                 self.last_received_lock = False
                 time.sleep(self.sleep_time)
                 if self.stop:
+                    # print("xxx I BROKE THE LOOP")
                     break
 
-    def stop(self):
+    def stop_networking(self):
+        # print("Calling stop")
         self.stop = True
 
     def outgoing(self):
         outgoing = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         while True:
             if not self.to_send_lock:
+                # print("within outgoing, wasnt locked")
                 self.to_send_lock = True
                 if self.to_send is not None:
                     # print("data was actually sent")
                     pickled = pickle.dumps(self.to_send)
                     outgoing.sendto(pickled, self.outgoing_addr)
-
                 self.to_send_lock = False
                 time.sleep(self.sleep_time)
+
                 if self.stop:
+                    # print("xxx I BROKE THE LOOP")
                     break
 
     def send(self, data_to_send):
+        # print("net-udp trying to send")
         if not self.to_send_lock:
+            # print("wasnt locked")
             self.to_send_lock = True
             self.to_send = data_to_send
             self.to_send_lock = False
