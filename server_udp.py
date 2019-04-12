@@ -56,6 +56,7 @@ while True:
                 client_received_from = client
             break
     else:
+        print("Client connected",str(addr_rec))
         client_to_add = Client(addr_rec, generate_uid())
         client_to_add.set_pos((data['x'], data['y']))
         clients.append(client_to_add)
