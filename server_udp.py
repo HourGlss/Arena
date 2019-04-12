@@ -191,7 +191,4 @@ while True:
         if client.addr != addr_rec:
             data_to_send.append(client.get_status())
     data_to_send.insert(0, client_received_from.get_status())
-    addr_rec = list(addr_rec)
-    addr_rec[1] = 5556
-    addr_rec = tuple(addr_rec)
     s.sendto(pickle.dumps(data_to_send), addr_rec)
