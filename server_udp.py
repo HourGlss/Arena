@@ -4,6 +4,7 @@ import random
 import pickle
 import time
 
+
 def generate_options():
     numbers = [str(i) for i in range(10)]
     low_letters = [chr(97 + e) for e in range(0, 26)]
@@ -24,16 +25,13 @@ def generate_uid():
     return uid
 
 
-
-
-
 import socket
 import pickle
 import random
 import time
-import config
 import threading
 import sys
+
 
 class Server:
     sleep_time = .016
@@ -43,8 +41,8 @@ class Server:
     last_received_lock = False
 
     clients = []
+
     def __init__(self):
-        self.host = config.host_ip
         self.incoming_port = 5555
         self.outgoing_port = 5556
         self.incoming_addr = (self.host, self.incoming_port)
@@ -53,7 +51,6 @@ class Server:
         outgoing.start()
         incoming = threading.Thread(target=self.incoming)
         incoming.start()
-
 
     def set_uid(self, uid):
         self.uid = uid
@@ -71,11 +68,11 @@ class Server:
                     if client.addr == addr_rec:
                         if self.last_received['time_made'] > client.last_seen:
                             client.set_pos((self.last_received['x'], self.last_received['y']))
-                            client.set_target((self.last_received['mouse_x'],self.last_received['mouse_y']))
+                            client.set_target((self.last_received['mouse_x'], self.last_received['mouse_y']))
                             client_received_from = client
                         break
                 else:
-                    print("Client connected",str(addr_rec))
+                    print("Client connected", str(addr_rec))
                     client_to_add = Client(addr_rec, generate_uid())
                     client_to_add.set_pos((self.last_received['x'], self.last_received['y']))
                     self.clients.append(client_to_add)
@@ -139,13 +136,15 @@ class Server:
             self.last_received_lock = False
             return data_to_return
         return False
+
+
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 server = ''
 incoming_port = 6555
 try:
     s.bind((server, incoming_port))
-    print("Starting this UDP server on",str(incoming_port))
+    print("Starting this UDP server on", str(incoming_port))
 
 except socket.error as e:
     print(str(e))
@@ -165,11 +164,11 @@ while True:
         if client.addr == addr_rec:
             if data['time_made'] > client.last_seen:
                 client.set_pos((data['x'], data['y']))
-                client.set_target((data['mouse_x'],data['mouse_y']))
+                client.set_target((data['mouse_x'], data['mouse_y']))
                 client_received_from = client
             break
     else:
-        print("Client connected",str(addr_rec))
+        print("Client connected", str(addr_rec))
         client_to_add = Client(addr_rec, generate_uid())
         print(addr_rec)
         client_to_add.set_pos((data['x'], data['y']))
@@ -186,12 +185,12 @@ while True:
             clients.remove(client)
         elif now - client.last_seen >= 3:
             if client.connected:
-                print("attempting to drop",client.uid)
+                print("attempting to drop", client.uid)
                 client.connected = False
 
         if client.addr != addr_rec:
             data_to_send.append(client.get_status())
-    data_to_send.insert(0,client_received_from.get_status())
+    data_to_send.insert(0, client_received_from.get_status())
     addr_rec = list(addr_rec)
     addr_rec[1] = 5556
     addr_rec = tuple(addr_rec)
