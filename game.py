@@ -142,6 +142,8 @@ class Game:
             if server_players != False:
                 if self.player.uid is None:
                     self.player.uid = self.net.uid
+                    print("my id is",self.player.uid)
+
             # I have other players
                 print(server_players)
                 for information in server_players:
@@ -150,6 +152,7 @@ class Game:
                     # print("inf",str(information))
                     for player in self.players:
                         if information['uid'] != self.player.uid:
+                            print("getting there")
                             if not information['c']:
                                 print("Trying to remove",player.uid)
                                 self.players.remove(player)
