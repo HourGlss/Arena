@@ -135,6 +135,8 @@ class Game:
             self.player.target_y = int(self.player.y + (self.player.radius * math.sin(self.tiltAngle)))
             # Send Network Stuff
             # self.player2.x, self.player2.y = self.parse_data(self.send_data())
+            if keys[pygame.K_q]:
+                self.player.x,self.player.y = pygame.mouse.get_pos()
             self.send_data()
             server_players = self.receive_data()
             if server_players != False:
@@ -147,18 +149,21 @@ class Game:
                     # print("inf",str(information))
                     for player in self.players:
                         if information['uid'] == player.uid and information['uid'] != self.player.uid:
+                            if not information['c']:
+                                self.players.remove(player)
                             player.x = information['x']
                             player.y = information['y']
-                            player.target_x = information['mouse_x']
-                            player.target_y = information['mouse_y']
+                            player.target_x = information['mx']
+                            player.target_y = information['my']
+
                             break
                     else:
                         # if not add
                         if information['uid'] != self.player.uid:
                             p = Player(information['x'], information['y'])
                             print("adding player from network")
-                            p.target_x = information['mouse_x']
-                            p.target_y = information['mouse_y']
+                            p.target_x = information['mx']
+                            p.target_y = information['my']
                             p.uid = information['uid']
                             self.players.append(p)
             # print(len(self.players))

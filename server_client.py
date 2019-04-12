@@ -1,4 +1,3 @@
-from GameData import GameData
 class Client:
     x = 0
     y = 0
@@ -6,10 +5,9 @@ class Client:
     target_y = 0
     addr = None
     uid = None
-
-
-
+    connected = True
     last_seen = None
+
     def __init__(self, addr, uid):
         print("New client",addr)
         self.uid = uid
@@ -31,4 +29,4 @@ class Client:
 
     def get_status(self):
         #THIS IS OUTGOING DATA FROM THE SERVER
-        return {'uid':self.uid,'x':self.x,'y':self.y,'mouse_x':self.target_x,'mouse_y':self.target_y}
+        return {'uid':self.uid,'x':self.x,'y':self.y,'mx':self.target_x,'my':self.target_y,'c':self.connected}

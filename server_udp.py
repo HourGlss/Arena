@@ -65,8 +65,11 @@ while True:
     client_received_from.last_seen = data['time_made']
     data_to_send = []
     for client in clients:
-        if now - client.last_seen >= 10:
-            print("Removing",client.addr," -- ",client.uid)
+        if now - client.last_seen >= 3:
+            client.connected = False
+        elif now - client.last_seen >= 3.5:
+
+            print("Removing", client.addr, " -- ", client.uid)
             clients.remove(client)
 
         if client.addr != addr_rec:
