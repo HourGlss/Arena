@@ -143,28 +143,34 @@ class Game:
                 if self.player.uid is None:
                     self.player.uid = self.net.uid
             # I have other players
+                print(server_players)
                 for information in server_players:
                     # check to see if that player already exists
                     # if so update
                     # print("inf",str(information))
                     for player in self.players:
-                        if information['uid'] == player.uid and information['uid'] != self.player.uid:
+                        if information['uid'] != self.player.uid:
                             if not information['c']:
+                                print("Trying to remove",player.uid)
                                 self.players.remove(player)
-                            player.x = information['x']
-                            player.y = information['y']
-                            player.target_x = information['mx']
-                            player.target_y = information['my']
+                                break
+                            if information['uid'] == player.uid:
 
-                            break
+                                player.x = information['x']
+                                player.y = information['y']
+                                player.target_x = information['mx']
+                                player.target_y = information['my']
+
+                                break
                     else:
                         # if not add
                         if information['uid'] != self.player.uid:
                             p = Player(information['x'], information['y'])
-                            print("adding player from network")
+                            p.uid = information['uid']
+                            print("adding player from network",p.uid)
                             p.target_x = information['mx']
                             p.target_y = information['my']
-                            p.uid = information['uid']
+
                             self.players.append(p)
             # print(len(self.players))
 

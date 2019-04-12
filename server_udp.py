@@ -69,9 +69,10 @@ while True:
             print("Removing", client.addr, " -- ", client.uid)
             clients.remove(client)
         elif now - client.last_seen >= 3:
+            print("attempting to drop",client.uid)
             client.connected = False
 
-        if client.addr != addr_rec and client.connected:
+        if client.addr != addr_rec:
             data_to_send.append(client.get_status())
     data_to_send.insert(0,client_received_from.get_status())
     addr_rec = list(addr_rec)
