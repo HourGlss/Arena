@@ -13,6 +13,7 @@ class Network:
     to_send_lock = False
     last_received = None
     last_received_lock = False
+    stop = False
     def __init__(self):
         self.host = config.host_ip  # For this to work on your machine this must be equal to the ipv4 address of the machine running the server
         # You can find this address by typing ipconfig in CMD and copying the ipv4 address. Again this must be the servers
@@ -44,6 +45,11 @@ class Network:
                     self.set_uid(self.last_received[0]['uid'])
                 self.last_received_lock = False
                 time.sleep(self.sleep_time)
+                if self.stop:
+                    break
+
+    def stop(self):
+        self.stop = True
 
     def outgoing(self):
         outgoing = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -57,6 +63,8 @@ class Network:
 
                 self.to_send_lock = False
                 time.sleep(self.sleep_time)
+                if self.stop:
+                    break
 
     def send(self, data_to_send):
         if not self.to_send_lock:

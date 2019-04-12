@@ -19,9 +19,8 @@ class Game:
         self.height = h
         self.player = Player(int(self.width / 2), int(self.height / 2))
         self.canvas = Canvas(self.width, self.height, "Testing...")
-        self.players.append(self.player)
         # pygame.mouse.set_visible(False)
-
+        self.players.append(self.player)
     def run(self):
         iters = 0
         clock = pygame.time.Clock()
@@ -32,9 +31,11 @@ class Game:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.net.stop()
                     run = False
 
                 if event.type == pygame.K_ESCAPE:
+                    self.net.stop()
                     run = False
 
             keys = pygame.key.get_pressed()
@@ -140,28 +141,27 @@ class Game:
             if server_players != False:
                 if self.player.uid is None:
                     self.player.uid = self.net.uid
-                if len(server_players) > 1:
-                # I have other players
-                    for information in server_players:
-                        # check to see if that player already exists
-                        # if so update
-                        # print("inf",str(information))
-                        for player in self.players:
-                            if information['uid'] == player.uid:
-                                player.x = information['x']
-                                player.y = information['y']
-                                player.target_x = information['mouse_x']
-                                player.target_y = information['mouse_y']
-                                break
-                        else:
-                            # if not add
+            # I have other players
+                for information in server_players:
+                    # check to see if that player already exists
+                    # if so update
+                    # print("inf",str(information))
+                    for player in self.players:
+                        if information['uid'] == player.uid and information['uid'] != self.player.uid:
+                            player.x = information['x']
+                            player.y = information['y']
+                            player.target_x = information['mouse_x']
+                            player.target_y = information['mouse_y']
+                            break
+                    else:
+                        # if not add
 
-                            p = Player(information['x'], information['y'])
-                            print("adding player from network")
-                            p.target_x = information['mouse_x']
-                            p.target_y = information['mouse_y']
-                            p.uid = information['uid']
-                            self.players.append(p)
+                        p = Player(information['x'], information['y'])
+                        print("adding player from network")
+                        p.target_x = information['mouse_x']
+                        p.target_y = information['mouse_y']
+                        p.uid = information['uid']
+                        self.players.append(p)
             # print(len(self.players))
 
             # Update Canvas2
