@@ -10,41 +10,79 @@ class Network:
     uid = None
     sleep_time = .016
     to_send = None
-    to_send_lock = False
+    socket_lock = False
     last_received = None
     last_received_lock = False
+    to_send_lock = False
     stop = False
     def __init__(self):
         self.host = config.host_ip  # For this to work on your machine this must be equal to the ipv4 address of the machine running the server
         # You can find this address by typing ipconfig in CMD and copying the ipv4 address. Again this must be the servers
         # ipv4 address. This feild will be the same for all your clients.
-        self.incoming_port = 5556
-        self.outgoing_port = 5555
-        self.incoming_addr = (self.host, self.incoming_port)
+        self.outgoing_port = 6555
+
         self.outgoing_addr = (self.host, self.outgoing_port)
-        outgoing = threading.Thread(target=self.outgoing)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        outgoing = threading.Thread(target=self.outgoing,args = (sock,))
         outgoing.start()
-        incoming = threading.Thread(target=self.incoming)
+        incoming = threading.Thread(target=self.incoming,args = (sock,))
         incoming.start()
 
 
     def set_uid(self, uid):
         self.uid = uid
 
-    def incoming(self):
-        incoming = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        incoming.bind(("", self.incoming_port))
+    def incoming(self,sock):
+        # print("start incoming")
         while True:
-            if not self.last_received_lock:
-                self.last_received_lock = True
-                data_rec, addr_rec = incoming.recvfrom(1024)
-                self.last_received = pickle.loads(data_rec)
-                # print(data_rec)
-                # print(self.last_received)
-                if self.uid is None:
-                    self.set_uid(self.last_received[0]['uid'])
-                self.last_received_lock = False
-                time.sleep(self.sleep_time)
+            time.sleep(self.sleep_time)
+            if not self.socket_lock:
+                # print("incoming, socket wasnt locked, now it is")
+
+                self.socket_lock = True
+                data_rec = None
+                try:
+                    data_rec, addr_rec = sock.recv(1024)
+
+                    self.last_received = pickle.loads(data_rec)
+                    # print(data_rec)
+                    # print("incoming received",self.last_received)
+                    if self.uid is None:
+                        self.set_uid(self.last_received[0]['uid'])
+                except:
+                    continue
+                finally:
+                    self.socket_lock = False
+                # print("incoming, socket wasnt locked, now it isnt")
+
+
+                if self.stop:
+                    # print("xxx I BROKE THE LOOP")
+                    break
+
+
+
+    def outgoing(self,sock):
+        # print("start outgoing")
+
+        while True:
+            time.sleep(self.sleep_time)
+            if not self.socket_lock:
+
+                self.socket_lock = True
+                # print("outgoing, socket wasnt locked, now it is")
+                if self.to_send is not None:
+                    # print("outgoing data was actually sent")
+                    pickled = pickle.dumps(self.to_send)
+                    sock.sendto(pickled, self.outgoing_addr)
+                    # print("outgoing sent", self.to_send)
+
+
+                self.socket_lock = False
+                # print("outgoing, socket wasnt locked, now it isnt")
+
+
+
                 if self.stop:
                     # print("xxx I BROKE THE LOOP")
                     break
@@ -53,27 +91,10 @@ class Network:
         # print("Calling stop")
         self.stop = True
 
-    def outgoing(self):
-        outgoing = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        while True:
-            if not self.to_send_lock:
-                # print("within outgoing, wasnt locked")
-                self.to_send_lock = True
-                if self.to_send is not None:
-                    # print("data was actually sent")
-                    pickled = pickle.dumps(self.to_send)
-                    outgoing.sendto(pickled, self.outgoing_addr)
-                self.to_send_lock = False
-                time.sleep(self.sleep_time)
-
-                if self.stop:
-                    # print("xxx I BROKE THE LOOP")
-                    break
-
     def send(self, data_to_send):
-        # print("net-udp trying to send")
+        # print("send trying to send")
         if not self.to_send_lock:
-            # print("wasnt locked")
+            # print("send wasnt locked")
             self.to_send_lock = True
             self.to_send = data_to_send
             self.to_send_lock = False
@@ -84,14 +105,14 @@ class Network:
         # print("receive is being called")
         if not self.last_received_lock:
             self.last_received_lock = True
-            # print("it's not locked")
+            # print("receive it's not locked")
             if self.last_received is not None:
-                # print("It isnt none")
+                # print("receive It isnt none")
                 data_to_return = self.last_received
-                # print(data_to_return)
+                print(data_to_return)
                 self.last_received = None
             else:
-                # print("It is none")
+                # print("receive It is none")
                 self.last_received_lock = False
                 return False
             self.last_received_lock = False
