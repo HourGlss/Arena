@@ -79,6 +79,7 @@ class Server:
             except Exception as e:
                 print(e)
             self.last_received = pickle.loads(data_received)
+            print(self.last_received)
             # print(self.last_received)
             if not self.clients_lock:
                 # print("incoming loop")
