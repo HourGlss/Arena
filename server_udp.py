@@ -25,7 +25,6 @@ class Server:
         incoming.start()
         self.run()
 
-
     def generate_options(self):
         numbers = [str(i) for i in range(10)]
         low_letters = [chr(97 + e) for e in range(0, 26)]
@@ -46,8 +45,9 @@ class Server:
                     client = self.clients[i]
                     if now - client.time_last_seen >= 10.5:
                         print("Removing", client.address, " -- ", client.uid)
-
-                        self.clients.remove(client)
+                        if client in self.clients:
+                            self.clients.remove(client)
+                            break
                     elif now - client.time_last_seen >= 10:
                         if client.connected:
                             print("Attempting to drop", client.uid)
@@ -75,7 +75,7 @@ class Server:
             # print("incoming")
 
             try:
-                data_received ,address_received_from = s.recvfrom(1024)
+                data_received, address_received_from = s.recvfrom(1024)
             except Exception as e:
                 print(e)
             self.last_received = pickle.loads(data_received)
@@ -83,8 +83,10 @@ class Server:
             if not self.clients_lock:
                 # print("incoming loop")
                 self.clients_lock = True
+                found = False
                 for client in self.clients:
                     if client.address == address_received_from:
+                        found = True
                         seq = self.last_received['s']
                         if seq > client.last_seen or (seq < 10 and client.reset_soon):
                             client.set_pos((self.last_received['x'], self.last_received['y']))
@@ -92,25 +94,25 @@ class Server:
                             client.last_seen = self.last_received['s']
                             now = time.time()
                             client.time_last_seen = now
-                            print("updating",client.uid,"'s time to ",now)
+                            print("updating", client.uid, "'s time to ", now)
                             if client.reset_soon:
                                 # print("client is reset")
                                 client.reset_soon = False
-                            if seq >=590:
+                            if seq >= 590:
                                 # print("client due for reset")
                                 client.reset_soon = True
-                        break
-                else:
+                            break
+                    else:
+                        print("couldn't find", address_received_from)
+                if not found:
                     client_to_add = Client(address_received_from, self.generate_uid())
                     client_to_add.set_pos((self.last_received['x'], self.last_received['y']))
                     client_to_add.set_target((self.last_received['mouse_x'], self.last_received['mouse_y']))
-                    print("New client connected", client_to_add.uid,str(address_received_from))
+                    print("New client connected", client_to_add.uid, str(address_received_from))
                     client_to_add.last_seen = self.last_received['s']
                     client_to_add.time_last_seen = time.time()
                     self.clients.append(client_to_add)
                 self.clients_lock = False
-
-
 
             if self.stop:
                 # print("xxx I BROKE THE LOOP")
