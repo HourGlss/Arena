@@ -91,6 +91,9 @@ class Server:
                             client.set_target((self.last_received['mouse_x'], self.last_received['mouse_y']))
                             client_received_from = client
                             client.last_seen = self.last_received['time_made']
+                            now = time.time()
+                            print("client updated time:{} now:{} diff:{}".format(client.last_seen, now,
+                                                                         now - client.last_seen))
                         break
                 else:
                     client_to_add = Client(address_received_from, self.generate_uid())
