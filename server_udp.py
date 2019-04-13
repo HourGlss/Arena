@@ -102,6 +102,8 @@ class Server:
                                 # print("client due for reset")
                                 client.reset_soon = True
                             break
+                        else:
+                            print("seq: {} client.last_seen: {}".format(seq,client.last_seen))
                     else:
                         print("couldn't find", address_received_from)
                 if not found:
