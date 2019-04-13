@@ -73,7 +73,7 @@ class Network:
                 if self.to_send is not None:
                     # print("outgoing data was actually sent")
                     pickled = pickle.dumps(self.to_send)
-                    print(self.to_send)
+                    # print(self.to_send)
                     sock.sendto(pickled, self.outgoing_addr)
                     # print("outgoing sent", self.to_send)
 

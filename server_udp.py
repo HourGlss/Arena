@@ -119,8 +119,6 @@ class Server:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         while True:
             time.sleep(self.sleep_time)
-
-
             if len(self.clients) > 0 and not self.clients_lock:
                 # print("out")
                 self.clients_lock = True
