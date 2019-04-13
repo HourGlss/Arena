@@ -39,16 +39,16 @@ class Server:
         while True:
             time.sleep(self.sleep_time)
             now = time.time()
-            if not self.clients_lock:
+            if len(self.clients) > 0 and not self.clients_lock:
                 # print("main game loop")
                 self.clients_lock = True
                 for i in range(len(self.clients)):
                     client = self.clients[i]
-                    if now - client.last_seen >= 3.5:
+                    if now - client.last_seen >= 10.5:
                         print("Removing", client.address, " -- ", client.uid)
 
                         self.clients.remove(client)
-                    elif now - client.last_seen >= 3:
+                    elif now - client.last_seen >= 10:
                         if client.connected:
                             print("Attempting to drop", client.uid)
                             client.connected = False
@@ -72,11 +72,14 @@ class Server:
             print(str(e))
         while True:
             time.sleep(self.sleep_time)
+            # print("incoming")
+
             try:
                 data_received ,address_received_from = s.recvfrom(1024)
             except Exception as e:
                 print(e)
             self.last_received = pickle.loads(data_received)
+            # print(self.last_received)
             if not self.clients_lock:
                 # print("incoming loop")
                 self.clients_lock = True
@@ -93,8 +96,10 @@ class Server:
                     client_to_add = Client(address_received_from, self.generate_uid())
                     client_to_add.set_pos((self.last_received['x'], self.last_received['y']))
                     client_to_add.set_target((self.last_received['mouse_x'], self.last_received['mouse_y']))
+                    now = time.time()
                     print("New client connected", client_to_add.uid,str(address_received_from))
                     client_to_add.last_seen = self.last_received['time_made']
+                    print("client time:{} now:{} diff:{}".format(client_to_add.last_seen,now,now-client_to_add.last_seen))
                     self.clients.append(client_to_add)
                     client_received_from = client_to_add
                 if client_received_from is None:
@@ -114,7 +119,10 @@ class Server:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         while True:
             time.sleep(self.sleep_time)
-            if not self.clients_lock:
+
+
+            if len(self.clients) > 0 and not self.clients_lock:
+                # print("out")
                 self.clients_lock = True
                 # print("outgoing loop")
                 for i in range(len(self.clients)):
