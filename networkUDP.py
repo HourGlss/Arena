@@ -15,6 +15,7 @@ class Network:
     last_received_lock = False
     to_send_lock = False
     stop = False
+    sequence_number = 0
     def __init__(self):
         self.host = config.host_ip
         self.outgoing_port = 6555
@@ -72,6 +73,7 @@ class Network:
                 if self.to_send is not None:
                     # print("outgoing data was actually sent")
                     pickled = pickle.dumps(self.to_send)
+                    print(self.to_send)
                     sock.sendto(pickled, self.outgoing_addr)
                     # print("outgoing sent", self.to_send)
 
@@ -94,6 +96,10 @@ class Network:
         if not self.to_send_lock:
             # print("send wasnt locked")
             self.to_send_lock = True
+            if self.sequence_number >= 600:
+                self.sequence_number = 0
+            data_to_send['s'] = self.sequence_number
+            self.sequence_number+=1
             self.to_send = data_to_send
             self.to_send_lock = False
             return True

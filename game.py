@@ -152,10 +152,11 @@ class Game:
                     # print("inf",str(information))
                     for player in self.players:
                         if information['uid'] != self.player.uid:
-                            print("getting there")
                             if not information['c']:
                                 print("Trying to remove",player.uid)
-                                self.players.remove(player)
+                                if player in self.players:
+                                    print("removed",player.uid)
+                                    self.players.remove(player)
                                 break
                             if information['uid'] == player.uid:
 
@@ -196,16 +197,6 @@ class Game:
 
     def receive_data(self):
         return self.net.receive()
-
-
-    @staticmethod
-    def parse_data(data):
-        try:
-            d = data.split(":")[1].split(",")
-            return int(d[0]), int(d[1])
-        except:
-            return 0, 0
-
 
 class Canvas:
 

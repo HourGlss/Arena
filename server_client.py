@@ -7,7 +7,9 @@ class Client:
     uid = None
     connected = True
     last_seen = None
-    time_delta = 0
+    time_last_seen = 0
+    reset_soon = False
+
 
     def __init__(self, addr, uid):
         # print("New client",addr)

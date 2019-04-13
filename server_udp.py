@@ -44,11 +44,11 @@ class Server:
                 self.clients_lock = True
                 for i in range(len(self.clients)):
                     client = self.clients[i]
-                    if now - client.last_seen >= 10.5:
+                    if now - client.time_last_seen >= 10.5:
                         print("Removing", client.address, " -- ", client.uid)
 
                         self.clients.remove(client)
-                    elif now - client.last_seen >= 10:
+                    elif now - client.time_last_seen >= 10:
                         if client.connected:
                             print("Attempting to drop", client.uid)
                             client.connected = False
@@ -83,33 +83,30 @@ class Server:
             if not self.clients_lock:
                 # print("incoming loop")
                 self.clients_lock = True
-                client_received_from = None
                 for client in self.clients:
                     if client.address == address_received_from:
-                        if self.last_received['time_made'] > client.last_seen:
+                        seq = self.last_received['s']
+                        if seq > client.last_seen or (seq < 10 and client.reset_soon):
                             client.set_pos((self.last_received['x'], self.last_received['y']))
                             client.set_target((self.last_received['mouse_x'], self.last_received['mouse_y']))
-                            client_received_from = client
-                            client.last_seen = self.last_received['time_made']
-                            now = time.time()
-                            print("client updated time:{} now:{} diff:{}".format(client.last_seen, now,
-                                                                         now - client.last_seen))
+                            client.last_seen = self.last_received['s']
+                            client.time_last_seen = time.time()
+                            if client.reset_soon:
+                                # print("client is reset")
+                                client.reset_soon = False
+                            if seq >=590:
+                                # print("client due for reset")
+                                client.reset_soon = True
                         break
                 else:
                     client_to_add = Client(address_received_from, self.generate_uid())
                     client_to_add.set_pos((self.last_received['x'], self.last_received['y']))
                     client_to_add.set_target((self.last_received['mouse_x'], self.last_received['mouse_y']))
-                    now = time.time()
                     print("New client connected", client_to_add.uid,str(address_received_from))
-                    client_to_add.last_seen = self.last_received['time_made']
-                    print("client time:{} now:{} diff:{}".format(client_to_add.last_seen,now,now-client_to_add.last_seen))
+                    client_to_add.last_seen = self.last_received['s']
+                    client_to_add.time_last_seen = time.time()
                     self.clients.append(client_to_add)
-                    client_received_from = client_to_add
-                if client_received_from is None:
-                    self.clients_lock = False
-                    continue
                 self.clients_lock = False
-                client_received_from.last_seen = self.last_received['time_made']
 
 
 
