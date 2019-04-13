@@ -87,6 +87,7 @@ class Server:
                             client.set_pos((self.last_received['x'], self.last_received['y']))
                             client.set_target((self.last_received['mouse_x'], self.last_received['mouse_y']))
                             client_received_from = client
+                            client.last_seen = self.last_received['time_made']
                         break
                 else:
                     print("New client connected", str(address_received_from))
