@@ -90,10 +90,11 @@ class Server:
                             client.last_seen = self.last_received['time_made']
                         break
                 else:
-                    print("New client connected", str(address_received_from))
                     client_to_add = Client(address_received_from, self.generate_uid())
                     client_to_add.set_pos((self.last_received['x'], self.last_received['y']))
                     client_to_add.set_target((self.last_received['mouse_x'], self.last_received['mouse_y']))
+                    print("New client connected", client_to_add.uid,str(address_received_from))
+                    client_to_add.last_seen = self.last_received['time_made']
                     self.clients.append(client_to_add)
                     client_received_from = client_to_add
                 if client_received_from is None:
