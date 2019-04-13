@@ -20,10 +20,11 @@ class Server:
         self.outgoing_port = 6555
         self.options = self.generate_options()
         outgoing = threading.Thread(target=self.outgoing)
-        outgoing.start()
         incoming = threading.Thread(target=self.incoming)
+        outgoing.start()
         incoming.start()
         self.run()
+
 
     def generate_options(self):
         numbers = [str(i) for i in range(10)]
@@ -31,7 +32,7 @@ class Server:
         high_letters = [chr(65 + e) for e in range(0, 26)]
         symbols = [chr(33 + e) for e in range(0, 15)]
         symbols2 = [chr(58 + e) for e in range(0, 7)]
-        all_options = symbols2 + symbols + numbers + high_letters + low_letters
+        all_options = numbers + high_letters + low_letters
         return all_options
 
     def run(self):
@@ -67,11 +68,14 @@ class Server:
             s.bind((server, self.outgoing_port))
             print("Starting this UDP server on", str(self.outgoing_port))
 
-        except socket.error as e:
+        except Exception as e:
             print(str(e))
         while True:
             time.sleep(self.sleep_time)
-            data_received ,address_received_from = s.recvfrom(1024)
+            try:
+                data_received ,address_received_from = s.recvfrom(1024)
+            except Exception as e:
+                print(e)
             self.last_received = pickle.loads(data_received)
             if not self.clients_lock:
                 # print("incoming loop")
@@ -92,9 +96,11 @@ class Server:
                     self.clients.append(client_to_add)
                     client_received_from = client_to_add
                 if client_received_from is None:
+                    self.clients_lock = False
                     continue
-                client_received_from.last_seen = self.last_received['time_made']
                 self.clients_lock = False
+                client_received_from.last_seen = self.last_received['time_made']
+
 
 
             if self.stop:
@@ -106,7 +112,6 @@ class Server:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         while True:
             time.sleep(self.sleep_time)
-            now = time.time()
             if not self.clients_lock:
                 self.clients_lock = True
                 # print("outgoing loop")
