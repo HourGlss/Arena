@@ -90,7 +90,9 @@ class Server:
                             client.set_pos((self.last_received['x'], self.last_received['y']))
                             client.set_target((self.last_received['mouse_x'], self.last_received['mouse_y']))
                             client.last_seen = self.last_received['s']
-                            client.time_last_seen = time.time()
+                            now = time.time()
+                            client.time_last_seen = now
+                            print("updating",client.uid,"'s time to ",now)
                             if client.reset_soon:
                                 # print("client is reset")
                                 client.reset_soon = False
