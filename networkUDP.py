@@ -22,6 +22,7 @@ class Network:
         self.outgoing_port = 6555
         self.outgoing_addr = (self.host, self.outgoing_port)
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.setblocking(0)
         outgoing = threading.Thread(target=self.outgoing,args = (sock,))
         outgoing.start()
         incoming = threading.Thread(target=self.incoming,args = (sock,))
@@ -42,7 +43,7 @@ class Network:
                 data_rec = None
                 if self.data_has_been_sent:
                     try:
-
+                        print("waiting to receive")
                         data_rec,addr_rec = sock.recvfrom(1024)
 
                         self.last_received = pickle.loads(data_rec)

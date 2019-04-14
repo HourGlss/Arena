@@ -134,7 +134,7 @@ class Server:
                     client = self.clients[i]
                     self.clients.remove(client)
                     self.clients.insert(0, client)
-                    # print("currently sending to",str(client))
+                    print("currently sending to",str(client))
                     pickled = pickle.dumps([c.get_status() for c in self.clients])
                     # print("Data looks like",str(pickled))
                     s.sendto(pickled, client.address)
