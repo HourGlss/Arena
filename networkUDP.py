@@ -47,7 +47,7 @@ class Network:
                         data_rec,addr_rec = sock.recvfrom(1024)
 
                         self.last_received = pickle.loads(data_rec)
-                        print("incoming received",self.last_received)
+                        # print("incoming received",self.last_received)
                         if self.uid is None:
                             self.set_uid(self.last_received[0]['uid'])
                     except Exception as e:
