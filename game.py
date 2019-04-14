@@ -139,10 +139,11 @@ class Game:
                 self.player.x,self.player.y = pygame.mouse.get_pos()
             self.send_data()
             server_players = self.receive_data()
-            if server_players != False:
+            if server_players is not False:
+
                 if self.player.uid is None:
                     self.player.uid = self.net.uid
-                    # print("my id is",self.player.uid)
+                    print("my id is",self.player.uid)
 
             # I have other players
             #     print(server_players)
