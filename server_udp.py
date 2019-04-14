@@ -17,7 +17,8 @@ class Server:
     options = None
 
     def __init__(self):
-        self.outgoing_port = 6555
+        self.incoming_port = 6666
+        self.outgoing_port = 6667
         self.options = self.generate_options()
         outgoing = threading.Thread(target=self.outgoing)
         incoming = threading.Thread(target=self.incoming)
@@ -65,8 +66,8 @@ class Server:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         server = ''
         try:
-            s.bind((server, self.outgoing_port))
-            print("Starting this UDP server on", str(self.outgoing_port))
+            s.bind((server, self.incoming_port))
+            print("Starting this UDP server on", str(self.incoming_port))
 
         except Exception as e:
             print(str(e))
@@ -139,7 +140,7 @@ class Server:
                     data_to_send = [c.get_status() for c in self.clients]
                     pickled = pickle.dumps(data_to_send)
                     # print("Data looks like",data_to_send)
-                    s.sendto(pickled, client.address)
+                    s.sendto(pickled, (client.address[0],self.outgoing_port))
                     self.clients.remove(client)
                     self.clients.insert(i, client)
 
