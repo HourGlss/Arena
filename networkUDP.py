@@ -14,6 +14,7 @@ class Network:
     last_received = None
     last_received_lock = False
     to_send_lock = False
+    data_has_been_sent = False
     stop = False
     sequence_number = 0
     def __init__(self):
@@ -39,20 +40,21 @@ class Network:
 
                 self.socket_lock = True
                 data_rec = None
-                try:
-                    data_rec = sock.recv(1024)
+                if self.data_has_been_sent:
+                    try:
 
-                    self.last_received = pickle.loads(data_rec)
-                    # print(data_rec)
-                    # print("incoming received",self.last_received)
-                    if self.uid is None:
-                        self.set_uid(self.last_received[0]['uid'])
-                except Exception as e:
-                    # print("incoming didn't receive",e)
-                    pass
-                finally:
-                    self.socket_lock = False
-                    # print("incoming, socket wasnt locked, now it isnt")
+                        data_rec,addr_rec = sock.recvfrom(1024)
+
+                        self.last_received = pickle.loads(data_rec)
+                        # print(data_rec)
+                        # print("incoming received",self.last_received)
+                        if self.uid is None:
+                            self.set_uid(self.last_received[0]['uid'])
+                    except Exception as e:
+                        print("incoming",e)
+
+                self.socket_lock = False
+                # print("incoming, socket wasnt locked, now it isnt")
 
 
                 if self.stop:
@@ -70,11 +72,25 @@ class Network:
 
                 self.socket_lock = True
                 # print("outgoing, socket wasnt locked, now it is")
-                if self.to_send is not None:
-                    # print("outgoing data was actually sent")
-                    pickled = pickle.dumps(self.to_send)
+                if not self.to_send_lock:
+                    self.to_send_lock = True
+                    if self.to_send is not None:
+
+                        # print("outgoing ",self.to_send)
+                        pickled = pickle.dumps(self.to_send)
+                        print(self.to_send)
+                        self.to_send = None
+                        self.data_has_been_sent = True
+                        try:
+                            sock.sendto(pickled, self.outgoing_addr)
+                        except Exception as e:
+                            print("outgoing",e)
+                    else:
+                        # print("but there was no data to send")
+                        pass
+                    self.to_send_lock = False
                     # print(self.to_send)
-                    sock.sendto(pickled, self.outgoing_addr)
+
                     # print("outgoing sent", self.to_send)
 
 

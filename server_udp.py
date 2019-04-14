@@ -77,7 +77,7 @@ class Server:
             try:
                 data_received, address_received_from = s.recvfrom(1024)
             except Exception as e:
-                print(e)
+                print(str(e))
             self.last_received = pickle.loads(data_received)
             print(self.last_received)
             # print(self.last_received)
