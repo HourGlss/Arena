@@ -43,17 +43,16 @@ class Network:
                 data_rec = None
                 if self.data_has_been_sent:
                     try:
-                        print("waiting to receive")
+                        # print("waiting to receive")
                         data_rec,addr_rec = sock.recvfrom(1024)
 
                         self.last_received = pickle.loads(data_rec)
-                        print(self.last_received)
-                        # print(data_rec)
                         # print("incoming received",self.last_received)
                         if self.uid is None:
                             self.set_uid(self.last_received[0]['uid'])
                     except Exception as e:
-                        print("incoming",e)
+                        # print("incoming",e)
+                        pass
 
                 self.socket_lock = False
                 # print("incoming, socket wasnt locked, now it isnt")
@@ -80,13 +79,14 @@ class Network:
 
                         # print("outgoing ",self.to_send)
                         pickled = pickle.dumps(self.to_send)
-                        print(self.to_send)
+                        # print(self.to_send)
                         self.to_send = None
                         self.data_has_been_sent = True
                         try:
                             sock.sendto(pickled, self.outgoing_addr)
                         except Exception as e:
-                            print("outgoing",e)
+                            # print("outgoing",e)
+                            pass
                     else:
                         # print("but there was no data to send")
                         pass

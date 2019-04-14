@@ -79,7 +79,6 @@ class Server:
             except Exception as e:
                 print(str(e))
             self.last_received = pickle.loads(data_received)
-            print(self.last_received)
             # print(self.last_received)
             if not self.clients_lock:
                 # print("incoming loop")
@@ -95,7 +94,7 @@ class Server:
                             client.last_seen = self.last_received['s']
                             now = time.time()
                             client.time_last_seen = now
-                            print("updating", client.uid, "'s time to ", now)
+                            # print("updating", client.uid, "'s time to ", now)
                             if client.reset_soon:
                                 # print("client is reset")
                                 client.reset_soon = False
@@ -104,9 +103,11 @@ class Server:
                                 client.reset_soon = True
                             break
                         else:
-                            print("seq: {} client.last_seen: {}".format(seq,client.last_seen))
+                            pass
+                            # print("seq: {} client.last_seen: {}".format(seq,client.last_seen))
                     else:
-                        print("couldn't find", address_received_from)
+                        pass
+                        # print("couldn't find", address_received_from)
                 if not found:
                     client_to_add = Client(address_received_from, self.generate_uid())
                     client_to_add.set_pos((self.last_received['x'], self.last_received['y']))
@@ -134,7 +135,7 @@ class Server:
                     client = self.clients[i]
                     self.clients.remove(client)
                     self.clients.insert(0, client)
-                    print("currently sending to",str(client))
+                    # print("currently sending to",str(client))
                     pickled = pickle.dumps([c.get_status() for c in self.clients])
                     # print("Data looks like",str(pickled))
                     s.sendto(pickled, client.address)

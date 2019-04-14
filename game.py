@@ -191,7 +191,7 @@ class Game:
         pygame.quit()
 
     def send_data(self):
-        print("Trying to send data")
+        # print("Trying to send data")
         data_to_send = GameData(self.player).get_dictionary()
         self.net.send(data_to_send)
 
